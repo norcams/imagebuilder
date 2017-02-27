@@ -1,0 +1,10 @@
+# byte-compiled python files
+*.pyc
+
+env/
+venv/
+
+build
+dist
+MANIFEST
+*.egg-info/*

@@ -1,0 +1,21 @@
+{
+  "builders": [{
+    "type": "openstack",
+      "image_name": "{{user `image_name`}}",
+      "source_image": "{{user `source_image`}}",
+      "flavor": "m1.small",
+      "security_groups": "{{user `security_group`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_keypair_name": "{{user `ssh_keypair_name`}}",
+      "ssh_private_key_file": "packerKey",
+      "ssh_pty": "true",
+      "availability_zone": "{{user `availability_zone`}}"
+  }],
+  "post-processors": [{
+    "type": "manifest" }
+  ],
+  "provisioners": [{
+    "type": "shell",
+    "script": "{{user `provision_script`}}"
+  }]
+}
