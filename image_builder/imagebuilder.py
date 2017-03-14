@@ -10,6 +10,7 @@ import uuid
 import argparse
 from .parsecommands import Commands
 from .build import BuildFunctions
+from .config import Config
 from keystoneauth1.identity import v3
 from keystoneauth1 import session
 from novaclient import client as novaclient
@@ -36,6 +37,8 @@ class ImageBuilder:
         c['project_domain_name'] = os.environ['OS_PROJECT_DOMAIN_NAME']
         c['region_name'] = os.environ['OS_REGION_NAME']
         c['no_cache'] = os.environ['OS_NO_CACHE']
+        c['template_dir'] = os.environ['IB_TEMPLATE_DIR'] if "IB_TEMPLATE_DIR" in os.environ else None
+        c['download_dir'] = os.environ['IB_DOWNLOAD_DIR'] if "IB_DOWNLOAD_DIR" in os.environ else None
         return c
 
 def main():
@@ -50,6 +53,11 @@ def main():
 
     session = ib.auth(rc)
     region = rc['region_name']
+
+    config = Config().config
+
+    template_dir = rc['template_dir'] or config.get('main', 'template_dir')
+    download_dir = rc['download_dir'] or config.get('main', 'download_dir')
 
     if commands.build_args:
         image_name = commands.build_args.name
@@ -69,7 +77,9 @@ def main():
                                az,
                                source_image,
                                sshuser,
-                               provision_script)
+                               provision_script,
+                               template_dir,
+                               download_dir)
 
         logging.info('Creating Packer security group...')
         secgroup_name, secgroup_id = build.create_security_group()

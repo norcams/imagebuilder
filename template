@@ -12,8 +12,9 @@
       "availability_zone": "{{user `availability_zone`}}"
   }],
   "post-processors": [{
-    "type": "manifest" }
-  ],
+    "type": "manifest",
+    "output": "{{user `manifest_path`}}"
+  }],
   "provisioners": [{
     "type": "shell",
     "script": "{{user `provision_script`}}"
