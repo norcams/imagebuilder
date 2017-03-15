@@ -1,10 +1,3 @@
-* Do not use relative paths
-  ✓ Look for template file in $CONFIG_DIR
-  ✓ Write packer-manifest to $TMP_DIR
-  ✓ Write temporary RSA-key to $TMP_DIR
-  ✓ Config-file with paths to template etc
-  ✓ Look for /etc/imagebuilder, $HOME/.imagebuilder, absolute path 
-
 * Exception handling
   * Isn't very good at the moment
   * Handle signals (clean up before dying)
