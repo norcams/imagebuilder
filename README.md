@@ -32,7 +32,7 @@ Pull requests are welcome!
 ### Installation
 - Clone this repository `git clone https://github.com/norcams/imagebuilder`
 - Install the requirements `pip3 install -r requirements.txt`
-- Run `./imagerunner`
+- Run `./imagebuilder`
 
 ### Usage
 Create a keystone_rc.sh file if you haven't already as described in
