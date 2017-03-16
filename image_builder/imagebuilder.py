@@ -1,22 +1,18 @@
 #!/usr/bin/python3
 
-import json
 import logging
 import os
-import subprocess
 import sys
-import tempfile
-import uuid
-import argparse
+from keystoneauth1.identity import v3
+from keystoneauth1 import session
 from .parsecommands import Commands
 from .build import BuildFunctions
 from .config import Config
-from keystoneauth1.identity import v3
-from keystoneauth1 import session
-from novaclient import client as novaclient
 
-class ImageBuilder:
-    def auth(self, rc):
+class ImageBuilder(object):
+    @staticmethod
+    #pylint: disable=invalid-name
+    def auth(rc):
         auth = v3.Password(auth_url=rc['auth_url'],
                            username=rc['username'],
                            password=rc['password'],
@@ -25,33 +21,35 @@ class ImageBuilder:
         sess = session.Session(auth)
         return sess
 
-    def get_os_env(self):
-        c = {}
-        c['username'] = os.environ['OS_USERNAME']
-        c['tenant_name'] = os.environ['OS_TENANT_NAME']
-        c['password'] = os.environ['OS_PASSWORD']
-        c['auth_url'] = os.environ['OS_AUTH_URL']
-        c['api_version'] = os.environ['OS_IDENTITY_API_VERSION']
-        c['domain_name'] = os.environ['OS_DOMAIN_NAME']
-        c['user_domain_name'] = os.environ['OS_USER_DOMAIN_NAME']
-        c['project_domain_name'] = os.environ['OS_PROJECT_DOMAIN_NAME']
-        c['region_name'] = os.environ['OS_REGION_NAME']
-        c['no_cache'] = os.environ['OS_NO_CACHE']
-        c['template_dir'] = os.environ['IB_TEMPLATE_DIR'] if "IB_TEMPLATE_DIR" in os.environ else None
-        c['download_dir'] = os.environ['IB_DOWNLOAD_DIR'] if "IB_DOWNLOAD_DIR" in os.environ else None
-        return c
+    @staticmethod
+    def get_os_env():
+        config = {}
+        config['username'] = os.environ['OS_USERNAME']
+        config['tenant_name'] = os.environ['OS_TENANT_NAME']
+        config['password'] = os.environ['OS_PASSWORD']
+        config['auth_url'] = os.environ['OS_AUTH_URL']
+        config['api_version'] = os.environ['OS_IDENTITY_API_VERSION']
+        config['domain_name'] = os.environ['OS_DOMAIN_NAME']
+        config['user_domain_name'] = os.environ['OS_USER_DOMAIN_NAME']
+        config['project_domain_name'] = os.environ['OS_PROJECT_DOMAIN_NAME']
+        config['region_name'] = os.environ['OS_REGION_NAME']
+        config['no_cache'] = os.environ['OS_NO_CACHE']
+        config['template_dir'] = os.environ['IB_TEMPLATE_DIR'] if "IB_TEMPLATE_DIR" in os.environ else None
+        config['download_dir'] = os.environ['IB_DOWNLOAD_DIR'] if "IB_DOWNLOAD_DIR" in os.environ else None
+        return config
 
 def main():
     commands = Commands()
-    ib = ImageBuilder()
+    imagebuilder = ImageBuilder()
 
     try:
-        rc = ib.get_os_env()
-    except:
+        # pylint: disable=invalid-name
+        rc = imagebuilder.get_os_env()
+    except KeyError:
         print("Failed to read environment variables.\nPlease run:\n  source <my_openrc>\nand try again.")
         sys.exit(1)
 
-    session = ib.auth(rc)
+    ib_session = imagebuilder.auth(rc)
     region = rc['region_name']
 
     config = Config().config
@@ -61,7 +59,7 @@ def main():
 
     if commands.build_args:
         image_name = commands.build_args.name
-        az = commands.build_args.availability_zone
+        avail_zone = commands.build_args.availability_zone
         source_image = commands.build_args.source_image
         sshuser = commands.build_args.ssh_username
         provision_script = commands.build_args.provision_script
@@ -71,10 +69,10 @@ def main():
         elif commands.build_args.debug:
             logging.basicConfig(level=logging.DEBUG)
 
-        build = BuildFunctions(session,
+        build = BuildFunctions(ib_session,
                                region,
                                image_name,
-                               az,
+                               avail_zone,
                                source_image,
                                sshuser,
                                provision_script,
@@ -104,3 +102,5 @@ def main():
         build.cleanup(secgroup_id, keypair_id)
 
         sys.exit(exitcode)
+
+# vim: set ft=python3

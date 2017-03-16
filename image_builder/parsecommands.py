@@ -9,6 +9,7 @@ class Commands(object):
             usage='''imagebuilder <command> [<args>]
 
    build          Builds an image
+   bootstrap      Downloads cloud-ready image from URL and uploads to Glance
 ''')
         parser.add_argument('command', help='Subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -17,12 +18,11 @@ class Commands(object):
             parser.print_help()
             exit(1)
         self.build_args = False
-        self.resources_args = False
+        self.bootstrap_args = False
         getattr(self, args.command)()
 
     def build(self):
-        parser = argparse.ArgumentParser(
-            description='Build an image')
+        parser = argparse.ArgumentParser(description='Build an image')
         parser.add_argument('-a', '--availability-zone',
                             help='Availability zone, i.e. bgo-default-1, osl-default-1',
                             default=False,
@@ -56,3 +56,21 @@ class Commands(object):
                             default=False)
         self.build_args = parser.parse_args(sys.argv[2:])
         return self.build_args
+
+    def bootstrap(self):
+        parser = argparse.ArgumentParser(
+            description='Download cloud-ready image and upload to glance')
+        parser.add_argument('-a', '--availability-zone',
+                            help='Availability zone, i.e. bgo-default-1, osl-default-1',
+                            default=False,
+                            required=True)
+        parser.add_argument('-d', '--download',
+                            help='Download from URL',
+                            default=False,
+                            required=True)
+        parser.add_argument('-n', '--name',
+                            help='Name of the image',
+                            default=False,
+                            required=True)
+        self.bootstrap_args = parser.parse_args(sys.argv[2:])
+        return self.bootstrap_args
