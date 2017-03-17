@@ -115,7 +115,7 @@ class BuildFunctions(object):
                '--var', provision_script_var,
                '--var', manifest_path_var,
                os.path.join(self.template_dir, 'template')]
-        logging.info(cmd)
+        logging.debug(cmd)
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         with process.stdout:
             helpers.log_subprocess_output(process.stdout)
