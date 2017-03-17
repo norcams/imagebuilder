@@ -9,7 +9,7 @@ class Commands(object):
             usage='''imagebuilder <command> [<args>]
 
    build          Builds an image
-   bootstrap      Downloads cloud-ready image from URL and uploads to Glance
+   bootstrap      Downloads a cloud-ready image from a URL and uploads to Glance
 ''')
         parser.add_argument('command', help='Subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -28,7 +28,7 @@ class Commands(object):
                             default=False,
                             required=True)
         parser.add_argument('-d', '--download',
-                            help='Download image after build (requires Glance CLI)',
+                            help='Download image after build',
                             action='store_true',
                             default=False)
         parser.add_argument('-n', '--name',
@@ -47,7 +47,7 @@ class Commands(object):
                             default=False,
                             required=True),
         parser.add_argument('-v', '--verbose',
-                            help='Be verbose (default is no ouput)',
+                            help='Be verbose (default is no output)',
                             action='store_true',
                             default=False)
         parser.add_argument('--debug',
@@ -89,7 +89,7 @@ class Commands(object):
                             default=False,
                             required=True)
         parser.add_argument('-v', '--verbose',
-                            help='Be verbose (default is no ouput)',
+                            help='Be verbose',
                             action='store_true',
                             default=False)
         parser.add_argument('--debug',
