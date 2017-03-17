@@ -7,7 +7,9 @@ from keystoneauth1.identity import v3
 from keystoneauth1 import session
 from .parsecommands import Commands
 from .build import BuildFunctions
+from .bootstrap import BootstrapFunctions
 from .config import Config
+from .helpers import Helpers as helpers
 
 class ImageBuilder(object):
     @staticmethod
@@ -100,7 +102,53 @@ def main():
 
         logging.info('Cleaning up...')
         build.cleanup(secgroup_id, keypair_id)
+        helpers.clean_tmp_files(build.tmp_dir)
 
         sys.exit(exitcode)
+
+    if commands.bootstrap_args:
+        image_name = commands.bootstrap_args.name
+        avail_zone = commands.bootstrap_args.availability_zone
+        url = commands.bootstrap_args.url
+        checksum_url = commands.bootstrap_args.checksum_url
+        disk_format = commands.bootstrap_args.disk_format
+        min_disk = int(commands.bootstrap_args.min_disk)
+        min_ram = int(commands.bootstrap_args.min_ram)
+
+        if commands.bootstrap_args.verbose:
+            logging.basicConfig(format="%(message)s", level=logging.INFO)
+        elif commands.bootstrap_args.debug:
+            logging.basicConfig(level=logging.DEBUG)
+
+        bootstrap = BootstrapFunctions(ib_session,
+                                       region,
+                                       avail_zone)
+        logging.info('Downloading image...')
+        image_file = bootstrap.download_and_check(url, checksum_url)
+
+        if image_file:
+            logging.info('Uploading image to Glance...')
+            image_id = bootstrap.create_glance_image(image_file,
+                                                     image_name,
+                                                     disk_format,
+                                                     min_disk,
+                                                     min_ram)
+        else:
+            logging.info('Downloading failed.')
+            logging.info('Cleaning up...')
+            helpers.clean_tmp_files(bootstrap.tmp_dir)
+            sys.exit(1)
+
+        if image_id:
+            sys.stdout.write(image_id)
+        else:
+            logging.info('Uploading failed.')
+            logging.info('Cleaning up...')
+            helpers.clean_tmp_files(bootstrap.tmp_dir)
+            sys.exit(1)
+
+        logging.info('Cleaning up...')
+        helpers.clean_tmp_files(bootstrap.tmp_dir)
+        sys.exit(0)
 
 # vim: set ft=python3
