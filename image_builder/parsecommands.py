@@ -59,7 +59,7 @@ class Commands(object):
 
     def bootstrap(self):
         parser = argparse.ArgumentParser(
-            description='Download cloud-ready image and upload to glance')
+            description='Downloads a cloud-ready image from a URL and uploads to glance')
         parser.add_argument('-a', '--availability-zone',
                             help='Availability zone, i.e. bgo-default-1, osl-default-1',
                             default=False,
