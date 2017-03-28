@@ -35,7 +35,6 @@ class BuildFunctions(object):
         self.nova.security_groups.delete(group=secgroup_id)
         logging.info('Removing temporary keypair...')
         self.nova.keypairs.delete(key=keypair_id)
-        helpers.clean_tmp_files(self.tmp_dir)
 
     def create_keypairs(self):
         """Creates a temporary keypair"""
