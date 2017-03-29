@@ -65,9 +65,11 @@ IB_DOWNLOAD_DIR.
 
 Your config file could like this:
 
-`[main]
+```
+[main]
 template_dir = /home/user/.imagebuilder
-download_dir = /tmp/images`
+download_dir = /tmp/images
+```
 
 ### Provision scripts
 A provision script is (when using imagebuilder) simply a shell script that will
