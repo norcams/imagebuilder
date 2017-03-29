@@ -55,6 +55,20 @@ now will have to delete these manually if the command is not allowed to finish.
 
 Run `imagebuilder <command> -h` for a complete list of options. 
 
+### Configuration
+imagebuilder needs to know where to look for a Packer template and where to
+store downloaded files (if using the -d option with the build command). You may
+either store these paths in a config file, which should be located in
+current/working directory, $HOME/.imagebuilder/config or
+/etc/imagebuilder/config, or in environmental variables IB_TEMPLATE_DIR and
+IB_DOWNLOAD_DIR.
+
+Your config file could like this:
+
+`[main]
+template_dir = /home/user/.imagebuilder
+download_dir = /tmp/images`
+
 ### Provision scripts
 A provision script is (when using imagebuilder) simply a shell script that will
 be executed on the virtual machine Packer builds an image from. In it's simplest
