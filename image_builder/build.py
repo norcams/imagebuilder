@@ -3,6 +3,7 @@ import logging
 import os
 import subprocess
 import tempfile
+import time
 import uuid
 from .helpers import Helpers as helpers
 from novaclient import client as novaclient
@@ -73,7 +74,8 @@ class BuildFunctions(object):
     def download_image(self, artifact_id):
         """Downloads image from Glance"""
         logging.info('Downloading image...')
-        filename = self.image_name + '.raw'
+        timestr = time.strftime("%Y%m%d")
+        filename = self.image_name + timestr + '.raw'
         cmd = ['glance',
                'image-download',
                '--file', os.path.join(self.download_dir, filename),
