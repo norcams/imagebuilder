@@ -72,10 +72,14 @@ class Commands(object):
                             help='URL to checksum file',
                             default=None,
                             required=False)
+        parser.add_argument('-t', '--checksum-digest',
+                            help='Checksum digest (defaults to sha256)',
+                            default='sha256',
+                            required=False),
         parser.add_argument('-n', '--name',
                             help='Name of the image',
                             default=False,
-                            required=True)
+                            required=True),
         parser.add_argument('-r', '--min-ram',
                             help='Minimum amount of ram in MB',
                             default=False,

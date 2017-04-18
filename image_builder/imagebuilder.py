@@ -111,6 +111,7 @@ def main():
         avail_zone = commands.bootstrap_args.availability_zone
         url = commands.bootstrap_args.url
         checksum_url = commands.bootstrap_args.checksum_url
+        checksum_digest = commands.bootstrap_args.checksum_digest
         disk_format = commands.bootstrap_args.disk_format
         min_disk = int(commands.bootstrap_args.min_disk)
         min_ram = int(commands.bootstrap_args.min_ram)
@@ -124,7 +125,7 @@ def main():
                                        region,
                                        avail_zone)
         logging.info('Downloading image...')
-        image_file = bootstrap.download_and_check(url, checksum_url)
+        image_file = bootstrap.download_and_check(url, checksum_url, checksum_digest)
 
         if image_file:
             logging.info('Uploading image to Glance...')
