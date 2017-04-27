@@ -16,7 +16,11 @@
     "output": "{{user `manifest_path`}}"
   }],
   "provisioners": [{
-    "type": "shell",
-    "script": "{{user `provision_script`}}"
+    "scripts": [
+      "scripts/fstrim.sh",
+      "{{user `provision_script`}}"
+    ],
+    "type": "shell"
   }]
 }
+
