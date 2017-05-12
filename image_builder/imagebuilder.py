@@ -13,42 +13,46 @@ from .helpers import Helpers as helpers
 
 class ImageBuilder(object):
     @staticmethod
-    #pylint: disable=invalid-name
     def auth(rc):
         auth = v3.Password(auth_url=rc['auth_url'],
                            username=rc['username'],
                            password=rc['password'],
                            user_domain_name=rc['user_domain_name'],
                            project_domain_name=rc['project_domain_name'])
-        sess = session.Session(auth)
+        if rc['cacert'] is not None:
+            sess = session.Session(auth,
+                                   verify=rc['cacert'])
+        else:
+            sess = session.Session(auth)
         return sess
 
     @staticmethod
-    def get_os_env():
-        config = {}
-        config['username'] = os.environ['OS_USERNAME']
-        config['tenant_name'] = os.environ['OS_TENANT_NAME']
-        config['password'] = os.environ['OS_PASSWORD']
-        config['auth_url'] = os.environ['OS_AUTH_URL']
-        config['api_version'] = os.environ['OS_IDENTITY_API_VERSION']
-        config['domain_name'] = os.environ['OS_DOMAIN_NAME']
-        config['user_domain_name'] = os.environ['OS_USER_DOMAIN_NAME']
-        config['project_domain_name'] = os.environ['OS_PROJECT_DOMAIN_NAME']
-        config['region_name'] = os.environ['OS_REGION_NAME']
-        config['no_cache'] = os.environ['OS_NO_CACHE']
-        config['template_dir'] = os.environ['IB_TEMPLATE_DIR'] if "IB_TEMPLATE_DIR" in os.environ else None
-        config['download_dir'] = os.environ['IB_DOWNLOAD_DIR'] if "IB_DOWNLOAD_DIR" in os.environ else None
-        return config
+    def get_openstack_rc():
+        env_var = {}
+        env_var['username'] = os.environ['OS_USERNAME']
+        env_var['project_name'] = os.environ['OS_PROJECT_NAME']
+        env_var['cacert'] = os.environ['OS_CACERT'] if "OS_CACERT" in os.environ else None
+        env_var['password'] = os.environ['OS_PASSWORD']
+        env_var['auth_url'] = os.environ['OS_AUTH_URL']
+        env_var['api_version'] = os.environ['OS_IDENTITY_API_VERSION']
+        env_var['domain_name'] = os.environ['OS_DOMAIN_NAME']
+        env_var['user_domain_name'] = os.environ['OS_USER_DOMAIN_NAME']
+        env_var['project_domain_name'] = os.environ['OS_PROJECT_DOMAIN_NAME']
+        env_var['region_name'] = os.environ['OS_REGION_NAME']
+        env_var['no_cache'] = os.environ['OS_NO_CACHE']
+        return env_var
 
 def main():
     commands = Commands()
     imagebuilder = ImageBuilder()
 
     try:
-        # pylint: disable=invalid-name
-        rc = imagebuilder.get_os_env()
+        rc = imagebuilder.get_openstack_rc()
     except KeyError:
-        print("Failed to read environment variables.\nPlease run:\n  source <my_openrc>\nand try again.")
+        print("""Failed to read environment variables.
+Please run:
+  source <my_openrc>
+and try again.""")
         sys.exit(1)
 
     ib_session = imagebuilder.auth(rc)
@@ -56,8 +60,23 @@ def main():
 
     config = Config().config
 
-    template_dir = rc['template_dir'] or config.get('main', 'template_dir')
-    download_dir = rc['download_dir'] or config.get('main', 'download_dir')
+    if "IB_TEMPLATE_DIR" in os.environ:
+        template_dir = os.environ['IB_TEMPLATE_DIR']
+    else:
+        try:
+            template_dir = config.get('main', 'template_dir')
+        except:
+            print("Failed to read template_dir from config")
+            sys.exit(1)
+
+    if "IB_DOWNLOAD_DIR" in os.environ:
+        download_dir = os.environ['IB_DOWNLOAD_DIR']
+    else:
+        try:
+            download_dir = config.get('main', 'download_dir')
+        except:
+            print("Failed to read download_dir from config")
+            sys.exit(1)
 
     if commands.build_args:
         image_name = commands.build_args.name
