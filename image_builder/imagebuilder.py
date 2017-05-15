@@ -35,7 +35,6 @@ class ImageBuilder(object):
         env_var['password'] = os.environ['OS_PASSWORD']
         env_var['auth_url'] = os.environ['OS_AUTH_URL']
         env_var['api_version'] = os.environ['OS_IDENTITY_API_VERSION']
-        env_var['domain_name'] = os.environ['OS_DOMAIN_NAME']
         env_var['user_domain_name'] = os.environ['OS_USER_DOMAIN_NAME']
         env_var['project_domain_name'] = os.environ['OS_PROJECT_DOMAIN_NAME']
         env_var['region_name'] = os.environ['OS_REGION_NAME']
