@@ -37,7 +37,7 @@ class Commands(object):
                             required=True)
         parser.add_argument('-p', '--provision-script',
                             help='Path to your provision script',
-                            default=False)
+                            default='/bin/true')
         parser.add_argument('-s', '--source-image',
                             help='Name or id of the source image we build from',
                             default=False,
