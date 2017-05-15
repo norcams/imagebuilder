@@ -15,6 +15,7 @@ class ImageBuilder(object):
     @staticmethod
     def auth(rc):
         auth = v3.Password(auth_url=rc['auth_url'],
+                           project_name=rc['project_name'],
                            username=rc['username'],
                            password=rc['password'],
                            user_domain_name=rc['user_domain_name'],
