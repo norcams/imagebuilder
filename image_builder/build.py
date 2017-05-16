@@ -104,7 +104,7 @@ class BuildFunctions(object):
         source_image_var = 'source_image=' + self.source_image
         provision_script_var = 'provision_script=' + self.provision_script
         manifest_path_var = 'manifest_path=' + os.path.join(self.tmp_dir, 'packer-manifest.json')
-        cmd = ['/usr/bin/packer', 'build',
+        cmd = ['packer', 'build',
                '-color=false',
                '--var', image_name_var,
                '--var', sshuser_var,
