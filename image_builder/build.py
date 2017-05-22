@@ -75,7 +75,7 @@ class BuildFunctions(object):
         """Downloads image from Glance"""
         logging.info('Downloading image...')
         timestr = time.strftime("%Y%m%d")
-        filename = self.image_name + timestr + '.raw'
+        filename = self.image_name + '-' + timestr + '.qcow2'
         cmd = ['glance',
                'image-download',
                '--file', os.path.join(self.download_dir, filename),
