@@ -73,6 +73,10 @@ class BuildFunctions(object):
                                               to_port=22)
         return secgroup_name, secgroup.id
 
+    def delete_image(self, image_id):
+        logging.info('Removing image %s' % image_id)
+        self.nova.images.delete(image_id)
+
     def download_image(self, artifact_id):
         """Downloads image from Glance"""
         logging.info('Downloading image...')
@@ -89,7 +93,7 @@ class BuildFunctions(object):
         # Not so pretty but will do for now
         if exitcode == 0:
             logging.info('Download successful, deleting from Glance...')
-            self.nova.images.delete(artifact_id)
+            self.delete_image(artifact_id)
         return exitcode
 
     def parse_manifest(self):
