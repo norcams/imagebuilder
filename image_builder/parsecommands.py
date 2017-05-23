@@ -31,6 +31,10 @@ class Commands(object):
                             help='Download image after build',
                             action='store_true',
                             default=False)
+        parser.add_argument('-f', '--flavor',
+                            help='Flavor to use when building (default: m1.small)',
+                            default='m1.small',
+                            required=False)
         parser.add_argument('-n', '--name',
                             help='Name of the image',
                             default=False,

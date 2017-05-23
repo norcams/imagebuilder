@@ -14,6 +14,7 @@ class BuildFunctions(object):
                  region,
                  image_name,
                  avail_zone,
+                 flavor,
                  source_image,
                  ssh_user,
                  provision_script,
@@ -22,6 +23,7 @@ class BuildFunctions(object):
         self.session = session
         self.image_name = image_name
         self.avail_zone = avail_zone
+        self.flavor = flavor
         self.source_image = source_image
         self.ssh_user = ssh_user
         self.provision_script = provision_script
@@ -101,6 +103,7 @@ class BuildFunctions(object):
         sshuser_var = 'ssh_username=' + self.ssh_user
         keyname_var = 'ssh_keypair_name=' + key_name
         keypath_var = 'ssh_key_path=' + os.path.join(self.tmp_dir, 'packerKey')
+        flavor_var = 'flavor=' + self.flavor
         source_image_var = 'source_image=' + self.source_image
         provision_script_var = 'provision_script=' + self.provision_script
         manifest_path_var = 'manifest_path=' + os.path.join(self.tmp_dir, 'packer-manifest.json')
@@ -109,6 +112,7 @@ class BuildFunctions(object):
                '--var', image_name_var,
                '--var', sshuser_var,
                '--var', secgroup_var,
+               '--var', flavor_var,
                '--var', source_image_var,
                '--var', keyname_var,
                '--var', keypath_var,

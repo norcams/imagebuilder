@@ -81,6 +81,7 @@ and try again.""")
     if commands.build_args:
         image_name = commands.build_args.name
         avail_zone = commands.build_args.availability_zone
+        flavor = commands.build_args.flavor
         source_image = commands.build_args.source_image
         sshuser = commands.build_args.ssh_username
         provision_script = commands.build_args.provision_script
@@ -94,6 +95,7 @@ and try again.""")
                                region,
                                image_name,
                                avail_zone,
+                               flavor,
                                source_image,
                                sshuser,
                                provision_script,
