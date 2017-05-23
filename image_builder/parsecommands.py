@@ -56,6 +56,7 @@ class Commands(object):
                             default=False)
         parser.add_argument('-x', '--purge-source',
                             help='Purge source image you are building from',
+                            action='store_true',
                             default=False)
         parser.add_argument('--debug',
                             help='Debug mode',
