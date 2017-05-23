@@ -86,6 +86,10 @@ class BuildFunctions(object):
         with process.stdout:
             helpers.log_subprocess_output(process.stdout)
         exitcode = process.wait()
+        # Not so pretty but will do for now
+        if exitcode == 0:
+            logging.info('Download successful, deleting from Glance...')
+            self.nova.images.delete(artifact_id)
         return exitcode
 
     def parse_manifest(self):
