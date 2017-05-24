@@ -37,6 +37,9 @@ case $platform in
   "debian")
     sudo apt-get update && sudo apt-get dist-upgrade
     ;;
+  "ubuntu")
+    sudo apt-get update && sudo apt-get dist-upgrade
+    ;;
   "el")
     sudo yum clean all && sudo yum upgrade
     ;;
