@@ -36,7 +36,8 @@ case $platform in
     ;;
   "debian")
     if test "$major_version" -ge 8; then
-      sudo cp /usr/share/doc/util-linux/examples/fstrim.{service,timer} /etc/systemd/system
+      sudo cp /usr/share/doc/util-linux/examples/fstrim.service /etc/systemd/system
+      sudo cp /usr/share/doc/util-linux/examples/fstrim.timer /etc/systemd/system
       sudo systemctl enable fstrim.timer
     else
       printf '#!/bin/sh\nfstrim --all || true\n' | sudo tee /etc/cron.weekly/fstrim
