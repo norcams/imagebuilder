@@ -32,16 +32,16 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
   "fedora")
-    sudo sudo dnf upgrade --refresh
+    sudo sudo dnf upgrade --refresh -y
     ;;
   "debian")
-    sudo apt-get update && sudo apt-get dist-upgrade
+    sudo apt-get update && sudo apt-get dist-upgrade -y
     ;;
   "ubuntu")
-    sudo apt-get update && sudo apt-get dist-upgrade
+    sudo apt-get update && sudo apt-get dist-upgrade -y
     ;;
   "el")
-    sudo yum clean all && sudo yum upgrade
+    sudo yum clean all && sudo yum upgrade -y
     ;;
 esac
 
