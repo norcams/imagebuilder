@@ -85,6 +85,7 @@ and try again.""")
         source_image = commands.build_args.source_image
         sshuser = commands.build_args.ssh_username
         provision_script = commands.build_args.provision_script
+        network = helpers.find_network_id(ib_session, commands.build_args.network_name)
 
         if commands.build_args.verbose:
             logging.basicConfig(format="%(message)s", level=logging.INFO)
@@ -100,7 +101,8 @@ and try again.""")
                                sshuser,
                                provision_script,
                                template_dir,
-                               download_dir)
+                               download_dir,
+                               network)
 
         logging.info('Creating Packer security group...')
         secgroup_name, secgroup_id = build.create_security_group()

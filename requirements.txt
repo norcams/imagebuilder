@@ -1,3 +1,4 @@
 keystoneauth1
 python-novaclient<8.0.0
 python-glanceclient
+python-neutronclient

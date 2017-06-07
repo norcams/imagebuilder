@@ -19,7 +19,8 @@ class BuildFunctions(object):
                  ssh_user,
                  provision_script,
                  template_dir,
-                 download_dir):
+                 download_dir,
+                 network):
         self.session = session
         self.image_name = image_name
         self.avail_zone = avail_zone
@@ -30,6 +31,8 @@ class BuildFunctions(object):
         self.template_dir = template_dir
         self.download_dir = download_dir
         self.tmp_dir = helpers.make_tmp_dir()
+        # Convert list to JSON array
+        self.network = network
         self.nova = novaclient.Client("2", session=session, region_name=region)
 
     def cleanup(self, secgroup_id, keypair_id):
@@ -112,6 +115,7 @@ class BuildFunctions(object):
         keyname_var = 'ssh_keypair_name=' + key_name
         keypath_var = 'ssh_key_path=' + os.path.join(self.tmp_dir, 'packerKey')
         flavor_var = 'flavor=' + self.flavor
+        networks_var = 'networks=' + self.network
         source_image_var = 'source_image=' + self.source_image
         provision_script_var = 'provision_script=' + self.provision_script
         manifest_path_var = 'manifest_path=' + os.path.join(self.tmp_dir, 'packer-manifest.json')
@@ -121,6 +125,7 @@ class BuildFunctions(object):
                '--var', sshuser_var,
                '--var', secgroup_var,
                '--var', flavor_var,
+               '--var', networks_var,
                '--var', source_image_var,
                '--var', keyname_var,
                '--var', keypath_var,

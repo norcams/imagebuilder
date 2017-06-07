@@ -2,6 +2,7 @@ import hashlib
 import logging
 import shutil
 import tempfile
+from neutronclient.v2_0 import client
 
 class Helpers(object):
 
@@ -9,6 +10,15 @@ class Helpers(object):
     def clean_tmp_files(tmp_dir):
         logging.info('Removing temporary directory with content...')
         shutil.rmtree(tmp_dir)
+
+    @staticmethod
+    def find_network_id(session, name):
+        neutron = client.Client(session=session)
+        networks = neutron.list_networks(name=name)
+        # Assume what we want is the first match
+        network_id = networks['networks'][0]['id']
+        logging.info("Found network %s with id %s" % (name, network_id))
+        return network_id
 
     @staticmethod
     def make_tmp_dir():

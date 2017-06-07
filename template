@@ -4,6 +4,7 @@
       "image_name": "{{user `image_name`}}",
       "source_image": "{{user `source_image`}}",
       "flavor": "{{user `flavor`}}",
+      "networks": "{{user `network`}}",
       "security_groups": "{{user `security_group`}}",
       "ssh_username": "{{user `ssh_username`}}",
       "ssh_keypair_name": "{{user `ssh_keypair_name`}}",
@@ -18,6 +19,7 @@
   "provisioners": [{
     "scripts": [
       "scripts/fstrim.sh",
+      "scripts/upgrade.sh",
       "{{user `provision_script`}}"
     ],
     "type": "shell"
