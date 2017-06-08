@@ -123,7 +123,7 @@ class BuildFunctions(object):
         keyname_var = 'ssh_keypair_name=' + key_name
         keypath_var = 'ssh_key_path=' + os.path.join(self.tmp_dir, 'packerKey')
         flavor_var = 'flavor=' + self.flavor
-        networks_var = 'networks=' + self.network
+        network_var = 'network=' + self.network
         source_image_var = 'source_image=' + self.source_image
         provision_script_var = 'provision_script=' + self.provision_script
         manifest_path_var = 'manifest_path=' + os.path.join(self.tmp_dir, 'packer-manifest.json')
@@ -133,7 +133,7 @@ class BuildFunctions(object):
                '--var', sshuser_var,
                '--var', secgroup_var,
                '--var', flavor_var,
-               '--var', networks_var,
+               '--var', network_var,
                '--var', source_image_var,
                '--var', keyname_var,
                '--var', keypath_var,

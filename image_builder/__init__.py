@@ -1,5 +1,5 @@
 __productname__ = 'imagebuilder'
-__version__ = '0.1'
+__version__ = '0.2'
 __copyright__ = "Copyright (c) 2017 UH IaaS"
 __author__ = "Anders Vaage"
 __author_email__ = "anders@uib.no"
