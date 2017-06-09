@@ -101,8 +101,7 @@ and try again.""")
                                sshuser,
                                provision_script,
                                template_dir,
-                               download_dir,
-                               network_name)
+                               download_dir)
 
         logging.info('Creating Packer security group...')
         secgroup_name, secgroup_id = build.create_security_group()
@@ -110,8 +109,14 @@ and try again.""")
         logging.info('Creating Packer keypair...')
         key_name, keypair_id = build.create_keypairs()
 
+        network_id = build.find_network_id(network_name)
+        print(network_id)
+
+        if not network_id:
+            sys.exit(1)
+
         logging.info('Running Packer...')
-        exitcode = build.run_packer(secgroup_name, key_name)
+        exitcode = build.run_packer(secgroup_name, key_name, network_id)
         if exitcode == 0:
             artifact_id = build.parse_manifest()
             logging.info("Successfully created image id %s" % artifact_id)

@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import subprocess
+import sys
 import tempfile
 import time
 import uuid
@@ -20,8 +21,7 @@ class BuildFunctions(object):
                  ssh_user,
                  provision_script,
                  template_dir,
-                 download_dir,
-                 network_name):
+                 download_dir):
         self.session = session
         self.image_name = image_name
         self.avail_zone = avail_zone
@@ -32,8 +32,8 @@ class BuildFunctions(object):
         self.template_dir = template_dir
         self.download_dir = download_dir
         self.tmp_dir = helpers.make_tmp_dir()
-        self.network = self.find_network_id(network_name)
         self.nova = novaclient.Client("2", session=session, region_name=region)
+        self.neutron = neutronclient.Client(session=session, region_name=region)
 
     def cleanup(self, secgroup_id, keypair_id):
         """Cleans up the mess we've made"""
@@ -100,11 +100,13 @@ class BuildFunctions(object):
         return exitcode
 
     def find_network_id(self, name):
-        neutron = neutronclient.Client(session=self.session)
-        networks = neutron.list_networks(name=name)
-        # Assume what we want is the first match
-        network_id = networks['networks'][0]['id']
-        logging.info("Found network %s with id %s" % (name, network_id))
+        networks = self.neutron.list_networks(name=name)
+        if networks['networks']:
+            network_id = networks['networks'][0]['id']
+            logging.info("Found network %s with id %s" % (name, network_id))
+        else:
+            network_id = False
+            logging.info("Cannot find network %s" % name)
         return network_id
 
     def parse_manifest(self):
@@ -114,7 +116,7 @@ class BuildFunctions(object):
         artifact_id = manifest['builds'][0]['artifact_id']
         return artifact_id
 
-    def run_packer(self, secgroup_name, key_name):
+    def run_packer(self, secgroup_name, key_name, network_id):
         """Executes Packer command"""
         image_name_var = 'image_name=' + self.image_name
         avail_zone_var = 'availability_zone=' + self.avail_zone
@@ -123,7 +125,7 @@ class BuildFunctions(object):
         keyname_var = 'ssh_keypair_name=' + key_name
         keypath_var = 'ssh_key_path=' + os.path.join(self.tmp_dir, 'packerKey')
         flavor_var = 'flavor=' + self.flavor
-        network_var = 'network=' + self.network
+        network_var = 'network=' + network_id
         source_image_var = 'source_image=' + self.source_image
         provision_script_var = 'provision_script=' + self.provision_script
         manifest_path_var = 'manifest_path=' + os.path.join(self.tmp_dir, 'packer-manifest.json')
