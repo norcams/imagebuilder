@@ -110,7 +110,6 @@ and try again.""")
         key_name, keypair_id = build.create_keypairs()
 
         network_id = build.find_network_id(network_name)
-        print(network_id)
 
         if not network_id:
             sys.exit(1)
