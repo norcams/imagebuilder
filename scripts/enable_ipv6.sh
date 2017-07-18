@@ -37,10 +37,14 @@ case $platform in
     && sudo echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" >> /etc/sysconfig/network-scripts/ifcfg-eth0
     ;;
   "debian")
-    sudo echo "iface eth0 inet6 dhcp" >> /etc/network/interfaces
+    sudo echo "timeout 10;" >> /etc/dhcp/dhclient6.conf \
+    && sudo echo -e "iface eth0 inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.eth0.leases -v eth0 || true" >> /etc/network/interfaces
     ;;
   "ubuntu")
-    sudo echo "iface eth0 inet6 dhcp" >> /etc/network/interfaces
+    # Try to figure out interface by looking at routing table
+    if=`route | grep '^default' | grep -o '[^ ]*$'`
+    sudo echo "timeout 10;" >> /etc/dhcp/dhclient6.conf \
+    && sudo echo -e "iface ${if} inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.${if}.leases -v ${if} || true" >> /etc/network/interfaces.d/50-cloud-init.cfg
     ;;
   "el")
     sudo echo "NETWORKING_IPV6=\"yes\"" >> /etc/sysconfig/network \
