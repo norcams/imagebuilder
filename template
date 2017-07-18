@@ -20,6 +20,7 @@
     "scripts": [
       "scripts/fstrim.sh",
       "scripts/upgrade.sh",
+      "scripts/enable_ipv6.sh",
       "{{user `provision_script`}}"
     ],
     "type": "shell"
