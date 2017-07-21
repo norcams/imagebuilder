@@ -32,23 +32,30 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
   "fedora")
-    sudo echo "NETWORKING_IPV6=\"yes\"" >> /etc/sysconfig/network \
+    echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
     && sudo sed -i '/IPV6INIT="no"/d' /etc/sysconfig/network-scripts/ifcfg-eth0 \
-    && sudo echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+    && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
     ;;
   "debian")
-    sudo echo "timeout 10;" >> /etc/dhcp/dhclient6.conf \
-    && sudo echo -e "iface eth0 inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.eth0.leases -v eth0 || true" >> /etc/network/interfaces
+    echo "timeout 10;" | sudo tee -a /etc/dhcp/dhclient6.conf \
+    && echo "iface eth0 inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.eth0.leases -v eth0 || true" | sudo tee -a /etc/network/interfaces
     ;;
   "ubuntu")
-    # Try to figure out interface by looking at routing table
-    if=`route | grep '^default' | grep -o '[^ ]*$'`
-    sudo echo "timeout 10;" >> /etc/dhcp/dhclient6.conf \
-    && sudo echo -e "iface ${if} inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.${if}.leases -v ${if} || true" >> /etc/network/interfaces.d/50-cloud-init.cfg
+  # Ubuntu uses cloud-init to configure network interface
+cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 1
+  config:
+  - type: physical
+    name: ens3
+    subnets:
+      - type: dhcp
+      - type: dhcp6
+EOF
     ;;
   "el")
-    sudo echo "NETWORKING_IPV6=\"yes\"" >> /etc/sysconfig/network \
+    echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
     && sudo sed -i '/IPV6INIT="no"/d' /etc/sysconfig/network-scripts/ifcfg-eth0 \
-    && sudo echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+    && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
     ;;
 esac
