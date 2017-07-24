@@ -33,14 +33,14 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     sudo sudo dnf upgrade --refresh -y \
-    && sudo dnf autoremove; \
+    && sudo dnf autoremove -y; \
     sudo dnf clean all
     sudo rm -rf /tmp/*
     ;;
   "debian")
     sudo apt-get update \
     && sudo apt-get dist-upgrade -y \
-    && sudo apt-get autoremove; \
+    && sudo apt-get autoremove -y; \
     sudo apt-get clean; \
     sudo rm -rf /var/lib/apt/lists/*; \
     sudo rm -rf /tmp/*
@@ -48,7 +48,7 @@ case $platform in
   "ubuntu")
     sudo apt-get update \
     && sudo apt-get dist-upgrade -y \
-    && sudo apt-get autoremove; \
+    && sudo apt-get autoremove -y; \
     sudo apt-get clean; \
     sudo rm -rf /var/lib/apt/lists/*; \
     sudo rm -rf /tmp/*
