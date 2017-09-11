@@ -34,6 +34,10 @@ Pull requests are welcome!
 - Install the requirements `pip3 install -r requirements.txt`
 - Run `./imagebuilder`
 
+Note that if you're running RHEL/CentOS there is another tool named packer in
+the default installation, unrelated to the Packer being used by imagebuilder.
+Check your user's $PATH to make sure the correct Packer is being executed.
+
 ### Usage
 Create a keystone_rc.sh file if you haven't already as described in
 [this document](http://docs.uh-iaas.no/en/latest/api.html)
