@@ -77,8 +77,14 @@ class BuildFunctions(object):
         return secgroup_name, secgroup.id
 
     def delete_image(self, image_id):
-        logging.info('Removing image %s' % image_id)
-        self.nova.images.delete(image_id)
+    	if(image_id is not None):
+    		try:
+        		logging.info('Removing image %s' % image_id)
+        		self.nova.images.delete(image_id)
+        		return True
+        	except:
+        		logging.info('Removing image failed.')
+        		return False
 
     def download_image(self, artifact_id):
         """Downloads image from Glance"""
