@@ -54,8 +54,25 @@ network:
 EOF
     ;;
   "el")
-    echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
-    && sudo sed -i '/IPV6INIT="no"/d' /etc/sysconfig/network-scripts/ifcfg-eth0 \
-    && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+    case $major_version in
+      "6")
+        echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
+          && sudo sed -i '/IPV6INIT="no"/d' /etc/sysconfig/network-scripts/ifcfg-eth0 \
+          && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+        ;;
+      "7")
+  # Centos 7 uses cloud-init to configure network interface
+cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 1
+  config:
+  - type: physical
+    name: eth0
+    subnets:
+      - type: dhcp
+      - type: dhcp6
+EOF
+        ;;
+    esac
     ;;
 esac
