@@ -41,7 +41,7 @@ class Commands(object):
                             required=True)
         parser.add_argument('-N', '--network-name',
                             help='Name of the network we want to use',
-                            default='Public',
+                            default='Dualstack',
                             required=False)
         parser.add_argument('-p', '--provision-script',
                             help='Path to your provision script',
