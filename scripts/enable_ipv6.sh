@@ -32,9 +32,6 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
   "fedora")
-    echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
-    && sudo sed -i '/IPV6INIT="no"/d' /etc/sysconfig/network-scripts/ifcfg-eth0 \
-    && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
     # Fedora uses cloud-init to configure network interface
 cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
