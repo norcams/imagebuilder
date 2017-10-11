@@ -35,13 +35,24 @@ case $platform in
     echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
     && sudo sed -i '/IPV6INIT="no"/d' /etc/sysconfig/network-scripts/ifcfg-eth0 \
     && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+    # Fedora uses cloud-init to configure network interface
+cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 1
+  config:
+  - type: physical
+    name: eth0
+    subnets:
+      - type: dhcp
+      - type: dhcp6
+EOF
     ;;
   "debian")
     echo "timeout 10;" | sudo tee -a /etc/dhcp/dhclient6.conf \
     && echo "iface eth0 inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.eth0.leases -v eth0 || true" | sudo tee -a /etc/network/interfaces
     ;;
   "ubuntu")
-  # Ubuntu uses cloud-init to configure network interface
+    # Ubuntu uses cloud-init to configure network interface
 cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 1
@@ -61,7 +72,7 @@ EOF
           && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
         ;;
       "7")
-  # Centos 7 uses cloud-init to configure network interface
+        # Centos 7 uses cloud-init to configure network interface
 cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 1
