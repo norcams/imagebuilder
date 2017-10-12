@@ -38,7 +38,7 @@ class BuildFunctions(object):
     def cleanup(self, secgroup_id, keypair_id):
         """Cleans up the mess we've made"""
         logging.info('Removing temporary security group...')
-        self.nova.security_groups.delete(group=secgroup_id)
+        self.neutron.delete_security_group(secgroup_id)
         logging.info('Removing temporary keypair...')
         self.nova.keypairs.delete(key=keypair_id)
 
@@ -67,14 +67,38 @@ class BuildFunctions(object):
         """Creates a temporary security group"""
         secgroup_name = "imagebuilder-" + str(uuid.uuid4().hex)
         # pylint: disable=line-too-long
-        secgroup = self.nova.security_groups.create(name=secgroup_name,
-                                                    description='Temporary security group for image building')
+        secgroup = self.neutron.create_security_group(body={
+            'security_group':
+            {
+                'name': secgroup_name,
+                'description': 'Temporary security group for image building'
+            }
+        })
+        secgroup_id = secgroup['security_group']['id']
         logging.info('Creating rule allowing SSH traffic...')
-        self.nova.security_group_rules.create(secgroup.id,
-                                              ip_protocol="tcp",
-                                              from_port=22,
-                                              to_port=22)
-        return secgroup_name, secgroup.id
+        self.neutron.create_security_group_rule(body={
+            'security_group_rule':
+            {
+                'security_group_id': secgroup_id,
+                'direction': 'ingress',
+                'protocol': 'tcp',
+                'port_range_min': 22,
+                'port_range_max': 22,
+                'ethertype': 'IPv4'
+            }
+        })
+        self.neutron.create_security_group_rule(body={
+            'security_group_rule':
+            {
+                'security_group_id': secgroup_id,
+                'direction': 'ingress',
+                'protocol': 'tcp',
+                'port_range_min': 22,
+                'port_range_max': 22,
+                'ethertype': 'IPv6'
+            }
+        })
+        return secgroup_name, secgroup_id
 
     def delete_image(self, image_id):
         logging.info('Removing image %s' % image_id)
