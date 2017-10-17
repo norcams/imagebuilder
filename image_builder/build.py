@@ -108,7 +108,7 @@ class BuildFunctions(object):
                 logging.info('Removing image %s' % image_id)
                 self.nova.images.delete(image_id)
                 return True
-        except:
+            except:
                 logging.info('Removing image failed.')
                 return False
 
