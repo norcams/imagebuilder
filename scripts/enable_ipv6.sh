@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Platform detection (borrowed from Omnitruck install script)
 # Debian-family and RedHat-family are currently supported
 # FIXME move platform detection to seperate file, use env var
@@ -46,7 +46,7 @@ EOF
     ;;
   "debian")
     echo "timeout 10;" | sudo tee -a /etc/dhcp/dhclient6.conf \
-    && echo "iface eth0 inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.eth0.leases -v eth0 || true" | sudo tee -a /etc/network/interfaces
+    && echo -e "iface eth0 inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.eth0.leases -v eth0 || true" | sudo tee -a /etc/network/interfaces
     ;;
   "ubuntu")
     # Ubuntu uses cloud-init to configure network interface
