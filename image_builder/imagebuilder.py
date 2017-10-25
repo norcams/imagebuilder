@@ -130,7 +130,10 @@ and try again.""")
         logging.info('Cleaning up...')
         build.cleanup(secgroup_id, keypair_id)
         if commands.build_args.purge_source:
-            build.delete_image(source_image)
+            if build.delete_image(source_image):
+                exitcode = 0
+            else:
+                exitcode = 1
         helpers.clean_tmp_files(build.tmp_dir)
 
         sys.exit(exitcode)
