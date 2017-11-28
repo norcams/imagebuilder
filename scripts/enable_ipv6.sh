@@ -33,14 +33,13 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     # Fedora uses cloud-init to configure network interface
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
 network:
   version: 1
   config:
   - type: physical
     name: eth0
     subnets:
-      - type: dhcp
       - type: dhcp6
 EOF
     ;;
