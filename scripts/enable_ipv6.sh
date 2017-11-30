@@ -32,8 +32,7 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
   "fedora")
-    # Fedora uses cloud-init to configure network interface
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
+cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 1
   config:
@@ -44,11 +43,17 @@ network:
 EOF
     ;;
   "debian")
-    echo "timeout 10;" | sudo tee -a /etc/dhcp/dhclient6.conf \
-    && echo -e "iface eth0 inet6 auto\n    up sleep 5\n    up dhclient -1 -6 -cf /etc/dhcp/dhclient6.conf -lf /var/lib/dhcp/dhclient6.eth0.leases -v eth0 || true" | sudo tee -a /etc/network/interfaces
+cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 1
+  config:
+  - type: physical
+    name: eth0
+    subnets:
+      - type: dhcp6
+EOF
     ;;
   "ubuntu")
-    # Ubuntu uses cloud-init to configure network interface
 cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 1
