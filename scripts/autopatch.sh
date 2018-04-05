@@ -33,10 +33,16 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
   sudo dnf install dnf-automatic -y
+  sudo sed -i "apply_updates=\"yes\"" /etc/dnf/automatic.conf
   sudo systemctl enable dnf-automatic.timer 
   sudo systemctl start dnf-automatic.timer 
-  sudo sed -i "apply_updates=\"yes\"" /etc/dnf/automatic.conf
     ;;
   "debian")
     ;;
+  "el")
+  sudo yum install yum-cron -y
+  sudo sed -i "apply_updates=\"yes\"" /etc/yum/yum-cron.conf
+  sudo systemctl start yum-cron.service
+    ;;
 esac
+
