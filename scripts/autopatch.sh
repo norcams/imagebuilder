@@ -33,7 +33,7 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
   sudo dnf install dnf-automatic -y
-  sudo sed -i "apply_updates=\"yes\"" /etc/dnf/automatic.conf
+  sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf
   sudo systemctl enable dnf-automatic.timer 
   sudo systemctl start dnf-automatic.timer 
     ;;
@@ -41,7 +41,7 @@ case $platform in
     ;;
   "el")
   sudo yum install yum-cron -y
-  sudo sed -i "apply_updates=\"yes\"" /etc/yum/yum-cron.conf
+  sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/yum/yum-cron.conf
   sudo systemctl start yum-cron.service
     ;;
 esac
