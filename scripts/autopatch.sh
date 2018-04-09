@@ -32,17 +32,26 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
   "fedora")
+  sudo dnf update -y
   sudo dnf install dnf-automatic -y
   sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf
   sudo systemctl enable dnf-automatic.timer 
   sudo systemctl start dnf-automatic.timer 
     ;;
-  "debian")
-    ;;
   "el")
+  sudo yum update -y
   sudo yum install yum-cron -y
   sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/yum/yum-cron.conf
   sudo systemctl start yum-cron.service
     ;;
+  "debian")
+  sudo apt-get update -y
+  sudo apt-get install unattended-upgrades apt-listchanges -y
+  sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
+    ;;
+  "ubuntu")
+  sudo apt-get update -y
+  sudo apt-get install unattended-upgrades apt-listchanges -y
+  sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
+    ;;
 esac
-
