@@ -69,20 +69,23 @@ EOF
     case $major_version in
       "6")
         echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
-          && sudo sed -i '/IPV6INIT="no"/d' /etc/sysconfig/network-scripts/ifcfg-eth0 \
           && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
         ;;
       "7")
-        # Centos 7 uses cloud-init to configure network interface
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
-network:
-  version: 1
-  config:
-  - type: physical
-    name: eth0
-    subnets:
-      - type: dhcp
-      - type: dhcp6
+        # Because of Red Hat's decision to hard code certain config parameterers
+        # into cloud-init, we have to disable cloud-init's network configuration
+        # entirely in CentOS 7 and do it manually.
+        echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+	echo "NETWORKING_IPV6=yes" | sudo tee -a /etc/sysconfig/network
+cat <<- EOF | sudo tee /etc/sysconfig/network-scripts/ifcfg-eth0
+BOOTPROTO=dhcp
+DEVICE=eth0
+DHCPV6C=yes
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+ONBOOT=yes
+TYPE=Ethernet
+USERCTL=no
 EOF
         ;;
     esac
