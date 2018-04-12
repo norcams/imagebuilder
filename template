@@ -21,6 +21,7 @@
       "scripts/fstrim.sh",
       "scripts/upgrade.sh",
       "scripts/enable_ipv6.sh",
+      "scripts/autopatch.sh",
       "{{user `provision_script`}}"
     ],
     "type": "shell"
