@@ -22,7 +22,8 @@
       "scripts/upgrade.sh",
       "scripts/enable_ipv6.sh",
       "scripts/autopatch.sh",
-      "{{user `provision_script`}}"
+      "{{user `provision_script`}}",
+      "scripts/cleanup.sh"
     ],
     "type": "shell"
   }]
