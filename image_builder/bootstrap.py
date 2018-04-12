@@ -39,13 +39,15 @@ class BootstrapFunctions(object):
         else:
             return image_file
 
-    def create_glance_image(self, image_file, name, disk_format, min_disk, min_ram):
+    def create_glance_image(self, image_file, name, disk_format, min_disk,
+                            min_ram, properties):
         image = self.glance.images.create(name=name,
                                           visibility="private",
                                           disk_format=disk_format,
                                           min_disk=min_disk,
                                           min_ram=min_ram,
-                                          container_format="bare")
+                                          container_format="bare",
+                                          **properties)
         logging.info("Created image %s" % name)
         logging.debug(image)
         try:

@@ -153,6 +153,12 @@ and try again.""")
         elif commands.bootstrap_args.debug:
             logging.basicConfig(level=logging.DEBUG)
 
+        properties = {}
+
+        if commands.bootstrap_args.scsi_mode:
+            properties['hw_disk_bus'] = 'scsi'
+            properties['hw_scsi_model'] = 'virtio-scsi'
+
         bootstrap = BootstrapFunctions(ib_session,
                                        region,
                                        avail_zone)
@@ -165,7 +171,8 @@ and try again.""")
                                                      image_name,
                                                      disk_format,
                                                      min_disk,
-                                                     min_ram)
+                                                     min_ram,
+                                                     properties)
         else:
             logging.info('Downloading failed.')
             logging.info('Cleaning up...')
