@@ -32,22 +32,29 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
   "fedora")
-    sudo dnf install dnf-automatic -y
-    sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf
-    sudo systemctl enable dnf-automatic.timer
-    sudo systemctl start dnf-automatic.timer
+    sudo dnf install dnf-automatic -y \
+    && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf \
+    && sudo systemctl enable dnf-automatic.timer
     ;;
   "el")
-    sudo yum install yum-cron -y
-    sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/yum/yum-cron.conf
-    sudo systemctl start yum-cron.service
+    case $major_version in
+      "6")
+        sudo yum install yum-cron -y \
+        && chkconfig yum-cron on
+        ;;
+      "7")
+        sudo yum install yum-cron -y \
+        && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/yum/yum-cron.conf \
+        && sudo systemctl enable yum-cron.service
+        ;;
+    esac
     ;;
   "debian")
-    sudo apt-get install unattended-upgrades apt-listchanges -y
-    sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
+    sudo apt-get install unattended-upgrades apt-listchanges -y \
+    && sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
     ;;
   "ubuntu")
-    sudo apt-get install unattended-upgrades apt-listchanges -y
-    sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
+    sudo apt-get install unattended-upgrades apt-listchanges -y \
+    && sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
     ;;
 esac
