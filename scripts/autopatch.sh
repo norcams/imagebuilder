@@ -40,7 +40,7 @@ case $platform in
     case $major_version in
       "6")
         sudo yum install yum-cron -y \
-        && chkconfig yum-cron on
+        && sudo chkconfig yum-cron on
         ;;
       "7")
         sudo yum install yum-cron -y \
