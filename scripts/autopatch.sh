@@ -35,26 +35,38 @@ case $platform in
     sudo dnf install dnf-automatic -y \
     && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf \
     && sudo systemctl enable dnf-automatic.timer
+    sudo dnf clean all
+    sudo rm -rf /tmp/*
     ;;
   "el")
     case $major_version in
       "6")
         sudo yum install yum-cron -y \
         && sudo chkconfig yum-cron on
+        sudo yum clean all
         ;;
       "7")
         sudo yum install yum-cron -y \
         && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/yum/yum-cron.conf \
         && sudo systemctl enable yum-cron.service
+        sudo yum clean all
         ;;
     esac
     ;;
   "debian")
-    sudo apt-get install unattended-upgrades apt-listchanges -y \
+    sudo apt-get update \
+    && sudo apt-get install unattended-upgrades apt-listchanges -y \
     && sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
+    sudo apt-get clean
+    sudo rm -rf /var/lib/apt/lists/*
+    sudo rm -rf /tmp/*
     ;;
   "ubuntu")
-    sudo apt-get install unattended-upgrades apt-listchanges -y \
+    sudo apt-get update \
+    && sudo apt-get install unattended-upgrades apt-listchanges -y \
     && sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
+    sudo apt-get clean
+    sudo rm -rf /var/lib/apt/lists/*
+    sudo rm -rf /tmp/*
     ;;
 esac
