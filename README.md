@@ -59,6 +59,26 @@ now will have to delete these manually if the command is not allowed to finish.
 
 Run `imagebuilder <command> -h` for a complete list of options. 
 
+### Bootstrap
+
+You can use imagebuilder to download a cloud-ready image from a URL and upload
+it to Glance (Openstack's image service).
+
+An example bootstrap command could be:
+
+`imagebuilder bootstrap -n 'IMAGEBUILDER CentOS 7' -a bgo-default-1 -u http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2 -c http://cloud.centos.org/centos/7/images/sha256sum.txt -t sha256 -r 768 -d 8 -f qcow2` 
+
+where -n is the name of the image as it will appear in Glance, -a is the
+availability zone, -u is the url of the image, -c is the url of the checksum
+file, -t is the checksum digest, -r is the minimum amount of ram required by the
+image, -d is the minimum amount of disk space required by the image and -f is
+the disk format.
+
+If successful, imagebuilder will return the id of the newly created image. You
+can use this output in a build command, for example: 
+
+`imagebuilder bootstrap <...> | xargs -I % imagebuilder build -s % <...>`
+
 ### Configuration
 imagebuilder needs to know where to look for a Packer template and where to
 store downloaded files (if using the -d option with the build command). You may
