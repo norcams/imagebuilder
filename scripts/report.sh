@@ -32,8 +32,17 @@ major_version=`echo $platform_version | cut -d. -f1`
 url="https://report.uh-iaas.no/downloads/${platform}/${major_version}/report"
 
 install() {
-  echo -e "#\!/bin/bash\nset -e\n\ncurl -fsS ${url} -o /usr/local/sbin/report\nchmod +x /usr/local/sbin/report\n\n/usr/local/sbin/report\n\nexit 0" \
-    | sudo tee /usr/local/sbin/report_wrapper
+cat <<-EOF | sudo tee /usr/local/sbin/report_wrapper
+#!/bin/bash
+set -e
+
+curl -fsS $url -o /usr/local/sbin/report
+chmod +x /usr/local/sbin/report
+
+/usr/local/sbin/report
+
+exit 0
+EOF
   sudo chmod +x /usr/local/sbin/report_wrapper
 cat <<-EOF | sudo tee /lib/systemd/system/report.timer
 [Unit]
