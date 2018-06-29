@@ -5,7 +5,7 @@ cat <<-EOF | sudo tee /usr/local/sbin/report_wrapper
 #!/bin/bash
 set -e
 
-curl -fsS $url -o /usr/local/sbin/report
+$download_cmd $url
 chmod +x /usr/local/sbin/report
 
 /usr/local/sbin/report
@@ -82,20 +82,29 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 url="https://report.uh-iaas.no/downloads/${platform}/${major_version}/v1/report"
 
-install_wrapper
-
 case $platform in
   "el")
     case $major_version in
       "6")
+        download_cmd='curl -fsS -o /usr/local/sbin/report'
+        install_wrapper
         install_anacron
         ;;
       "7")
+        download_cmd='curl -fsS -o /usr/local/sbin/report'
+        install_wrapper
         install_systemd
         ;;
     esac
     ;;
+  "debian")
+    download_cmd='wget --quiet -O /usr/local/sbin/report'
+    install_wrapper
+    install_systemd
+    ;;
   *)
+    download_cmd='curl -fsS -o /usr/local/sbin/report'
+    install_wrapper
     install_systemd
     ;;
 esac
