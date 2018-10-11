@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Clear last login info
->/var/log/lastlog
->/var/log/wtmp
->/var/log/btmp
+echo -n "" | sudo tee /var/log/lastlog
+echo -n "" | sudo tee /var/log/wtmp
+echo -n "" | sudo tee /var/log/btmp
 
 # Just fstrim for now
 sudo fstrim / || true
