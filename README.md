@@ -14,10 +14,6 @@ buildling of machine images in UH IaaS using only the command-line. For more
 advanced image building you should learn [how to use
 Packer](https://www.packer.io/docs/).
 
-**Please note that this tool is under development. Feel free to try but don't
-expect it to work properly. It may very well mess up your project at this stage
-so use with caution!**
-
 Pull requests are welcome!
 
 ### Requirements
