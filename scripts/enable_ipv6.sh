@@ -33,15 +33,21 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     case $major_version in
-      "28")
-	sudo yum -y install NetworkManager
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
-network:
-  version: 2
-  ethernets:
-    eth0:
-      dhcp4: true
-      dhcp6: true
+      "30")
+        # Because of Red Hat's decision to hard code certain config parameterers
+        # into cloud-init, we have to disable cloud-init's network configuration
+        # entirely in Fedora 28 and do it manually.
+      echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+	  echo "NETWORKING_IPV6=yes" | sudo tee -a /etc/sysconfig/network
+cat <<- EOF | sudo tee /etc/sysconfig/network-scripts/ifcfg-eth0
+BOOTPROTO=dhcp
+DEVICE=eth0
+DHCPV6C=yes
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+ONBOOT=yes
+TYPE=Ethernet
+USERCTL=no
 EOF
         ;;
     esac
