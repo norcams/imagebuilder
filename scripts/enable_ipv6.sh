@@ -33,12 +33,10 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     case $major_version in
-      "30")
-        # Because of Red Hat's decision to hard code certain config parameterers
-        # into cloud-init, we have to disable cloud-init's network configuration
-        # entirely in Fedora 28 and do it manually.
-      echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
-	  echo "NETWORKING_IPV6=yes" | sudo tee -a /etc/sysconfig/network
+      "31")
+        echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+        echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
+          && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
 cat <<- EOF | sudo tee /etc/sysconfig/network-scripts/ifcfg-eth0
 BOOTPROTO=dhcp
 DEVICE=eth0
