@@ -104,10 +104,10 @@ class Commands(object):
                             help='Format of the disk',
                             default=False,
                             required=True)
-        parser.add_argument('-s', '--scsi-mode',
-                            help='Create image with scsi disk properties',
+        parser.add_argument('-s', '--no-scsi-mode',
+                            help='Do not create image with scsi disk properties',
                             action='store_true',
-                            default=True)
+                            default=False)
         parser.add_argument('-v', '--verbose',
                             help='Be verbose',
                             action='store_true',

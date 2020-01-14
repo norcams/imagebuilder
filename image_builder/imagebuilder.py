@@ -155,7 +155,7 @@ and try again.""")
 
         properties = {}
 
-        if commands.bootstrap_args.scsi_mode:
+        if not commands.bootstrap_args.no_scsi_mode:
             properties['hw_disk_bus'] = 'scsi'
             properties['hw_scsi_model'] = 'virtio-scsi'
 
