@@ -18,13 +18,15 @@
   }],
   "provisioners": [{
     "scripts": [
+      "scripts/uio-rhel.sh",
       "scripts/fstrim.sh",
       "scripts/upgrade.sh",
       "scripts/enable_ipv6.sh",
       "scripts/autopatch.sh",
       "scripts/report.sh",
       "{{user `provision_script`}}",
-      "scripts/cleanup.sh"
+      "scripts/cleanup.sh",
+      "scripts/uio-cleanup.sh"
     ],
     "type": "shell"
   }]
