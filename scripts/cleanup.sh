@@ -9,7 +9,7 @@ echo -n | sudo tee /var/log/cloud-init-output.log
 
 # Trigger systemd-firstboot, ensure unique machine-id
 if [ -f /etc/machine-id ]; then
-    echo -n "" | sudo tee /etc/machine-id
+    sudo rm -f /etc/machine-id
 fi
 if [ -f /var/lib/dbus/machine-id ]; then
     echo -n "" | sudo tee /var/lib/dbus/machine-id
