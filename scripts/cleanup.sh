@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Clear last login info
-echo -n "" | sudo tee /var/log/lastlog
-echo -n "" | sudo tee /var/log/wtmp
-echo -n "" | sudo tee /var/log/btmp
+echo -n | sudo tee /var/log/lastlog
+echo -n | sudo tee /var/log/wtmp
+echo -n | sudo tee /var/log/btmp
 echo -n | sudo tee /var/log/cloud-init.log
 echo -n | sudo tee /var/log/cloud-init-output.log
 
@@ -12,7 +12,7 @@ if [ -f /etc/machine-id ]; then
     sudo rm -f /etc/machine-id
 fi
 if [ -f /var/lib/dbus/machine-id ]; then
-    echo -n "" | sudo tee /var/lib/dbus/machine-id
+    echo -n | sudo tee /var/lib/dbus/machine-id
 fi
 
 # Just fstrim for now
