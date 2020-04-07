@@ -61,18 +61,6 @@ network:
       - type: dhcp6
 EOF
     ;;
-  "ubuntu")
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
-network:
-  version: 1
-  config:
-  - type: physical
-    name: ens3
-    subnets:
-      - type: dhcp
-      - type: dhcp6
-EOF
-    ;;
   "el")
     case $major_version in
       "6")
