@@ -20,6 +20,7 @@
     "scripts": [
       "scripts/uio-rhel.sh",
       "scripts/fstrim.sh",
+      "scripts/qemu_guest_agent.sh",
       "scripts/upgrade.sh",
       "scripts/enable_ipv6.sh",
       "scripts/autopatch.sh",
