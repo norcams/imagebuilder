@@ -51,6 +51,12 @@ case $platform in
         && sudo systemctl enable yum-cron.service
         sudo yum clean all
         ;;
+      "8")
+        sudo dnf install dnf-automatic -y \
+        && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf \
+        && sudo systemctl enable --now dnf-automatic.timer
+        sudo dnf clean all
+        ;;
     esac
     ;;
   "debian")

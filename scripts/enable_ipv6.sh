@@ -33,7 +33,7 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     case $major_version in
-      "31")
+      "31"|"32")
         echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
         echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
           && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -67,8 +67,8 @@ EOF
         echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
           && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
         ;;
-      "7")
-	sudo yum -y install NetworkManager
+      "7"|"8")
+        sudo yum -y install NetworkManager
 cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 2
@@ -77,6 +77,8 @@ network:
       dhcp4: true
       dhcp6: true
 EOF
+        # Bug in upstream cloud image, workaround here as this is considered temporary
+        sudo sed -i '/nameserver 192.168.122.1/d' /etc/resolv.conf
         ;;
     esac
     ;;
