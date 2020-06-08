@@ -90,17 +90,10 @@ case $platform in
         install_wrapper
         install_anacron
         ;;
-      "7")
+      "7"|"8")
         download_cmd='curl -fsS -o /usr/local/sbin/report'
         install_wrapper
         install_systemd
-        ;;
-      "8")
-        download_cmd='curl -fsS -o /usr/local/sbin/report'
-        install_wrapper
-        install_systemd
-        # cloudimage does not include python, which the script needs (4/6 2020)
-        sudo yum install -y python3
         ;;
     esac
     ;;
