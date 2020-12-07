@@ -116,3 +116,7 @@ chmod +x linux-grid-latest
 cd /etc/nvidia/
 cp gridd.conf.template gridd.conf
 sed -i "s/^ServerAddress=/ServerAddress=$licserver/" gridd.conf
+
+# Clean up the driver package
+cd /root
+/bin/rm -rf ./linux-grid-latest
