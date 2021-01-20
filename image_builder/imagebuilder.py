@@ -159,6 +159,8 @@ and try again.""")
             properties['hw_disk_bus'] = 'scsi'
             properties['hw_scsi_model'] = 'virtio-scsi'
 
+        properties['hw_rng_model'] = 'virtio'
+
         bootstrap = BootstrapFunctions(ib_session,
                                        region,
                                        avail_zone)
