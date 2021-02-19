@@ -45,78 +45,78 @@ major_version=`echo $platform_version | cut -d. -f1`
 printf 'blacklist nouveau\noptions nouveau modeset=0\n' > /etc/modprobe.d/blacklist-nvidia-nouveau.conf
 case $platform in
   "fedora")
-    /usr/bin/dracut --force
+    sudo /usr/bin/dracut --force
     ;;
   "el")
     case $major_version in
       "7")
-        /sbin/dracut --force
+        sudo /sbin/dracut --force
         ;;
       "8")
-        /usr/bin/dracut --force
+        sudo /usr/bin/dracut --force
         ;;
     esac
     ;;
   "debian"|"ubuntu")
-    /usr/sbin/update-initramfs -u
+    sudo /usr/sbin/update-initramfs -u
     ;;
 esac
 
 # Install dkms and pciutils. Then determine newest installed kernel
 case $platform in
   "fedora")
-    /usr/bin/dnf install -y pciutils dkms kernel-devel kernel-headers
-    /usr/bin/dnf update -y kernel kernel-devel kernel-headers
+    sudo /usr/bin/dnf install -y pciutils dkms kernel-devel kernel-headers
+    sudo /usr/bin/dnf update -y kernel kernel-devel kernel-headers
     KERNELINSTALLED=$(rpm -qa kernel | sort -V -r | head -n 1)
     KERNELVERSION=${KERNELINSTALLED##kernel-}
     ;;
   "el")
     case $major_version in
       "7")
-        /bin/yum install -y pciutils epel-release
-        /bin/yum install -y dkms kernel-devel kernel-headers
-        /bin/yum update -y kernel kernel-devel kernel-headers
+        sudo /bin/yum install -y pciutils epel-release
+        sudo /bin/yum install -y dkms kernel-devel kernel-headers
+        sudo /bin/yum update -y kernel kernel-devel kernel-headers
         KERNELINSTALLED=$(rpm -qa kernel | sort -V -r | head -n 1)
         KERNELVERSION=${KERNELINSTALLED##kernel-}
         ;;
       "8")
-        /usr/bin/dnf install -y pciutils epel-release
-        /usr/bin/dnf install -y dkms kernel-devel kernel-headers
-        /usr/bin/dnf update -y kernel kernel-devel kernel-headers
+        sudo /usr/bin/dnf install -y pciutils epel-release
+        sudo /usr/bin/dnf install -y dkms kernel-devel kernel-headers
+        sudo /usr/bin/dnf update -y kernel kernel-devel kernel-headers
         KERNELINSTALLED=$(rpm -qa kernel | sort -V -r | head -n 1)
         KERNELVERSION=${KERNELINSTALLED##kernel-}
         ;;
     esac
     ;;
   "debian")
-    /usr/bin/apt -y install dkms pciutils curl
-    /usr/bin/apt-get update -y
-    /usr/bin/apt-get dist-upgrade -y
+    sudo /usr/bin/apt -y install dkms pciutils curl
+    sudo /usr/bin/apt-get update -y
+    sudo /usr/bin/apt-get dist-upgrade -y
     KERNELINSTALLED=$(/usr/bin/dpkg --list | grep linux-image | grep -v meta-package | sort -V -r | head -n 1 | cut -d' ' -f3)
     KERNELVERSION=${KERNELINSTALLED##linux-image-}
-    /usr/bin/apt install -y linux-headers-$KERNELVERSION
+    sudo /usr/bin/apt install -y linux-headers-$KERNELVERSION
     ;;
   "ubuntu")
-    /usr/bin/apt -y install dkms pciutils
-    /usr/bin/apt-get update -y
-    /usr/bin/apt-get dist-upgrade -y
+    sudo /usr/bin/apt -y install dkms pciutils
+    sudo /usr/bin/apt-get update -y
+    sudo /usr/bin/apt-get dist-upgrade -y
     KERNELINSTALLED=$(/usr/bin/dpkg --list | grep linux-image | grep generic | sort -V -r | head -n 1 | cut -d' ' -f3)
     KERNELVERSION=${KERNELINSTALLED##linux-image-}
-    /usr/bin/apt install -y linux-headers-$KERNELVERSION
+    sudo /usr/bin/apt install -y linux-headers-$KERNELVERSION
     ;;
 esac
 
 # Get latest NVIDIA GRID package and build with dkms for newest installed kernel
-cd /root
+cd /tmp
 /usr/bin/curl -O https://iaas-repo.uio.no/uh-iaas/nrec-resources/files/nvidia-vgpu/linux-grid-latest
 chmod +x linux-grid-latest
-./linux-grid-latest --dkms -n -s -k $KERNELVERSION
+sudo ./linux-grid-latest --dkms -n -s -k $KERNELVERSION
 
 # Configure license server for the GRID software based on region
 cd /etc/nvidia/
-cp gridd.conf.template gridd.conf
-sed -i "s/^ServerAddress=/ServerAddress=$licserver/" gridd.conf
+sudo cp gridd.conf.template gridd.conf
+sudo sed -i "s/^ServerAddress=/ServerAddress=$licserver/" gridd.conf
 
 # Clean up the driver package
-cd /root
+cd /tmp
 /bin/rm -rf ./linux-grid-latest
