@@ -42,7 +42,7 @@ fi
 major_version=`echo $platform_version | cut -d. -f1`
 
 # The nouveau driver needs to be blacklisted
-printf 'blacklist nouveau\noptions nouveau modeset=0\n' > /etc/modprobe.d/blacklist-nvidia-nouveau.conf
+sudo sh -c "printf 'blacklist nouveau\noptions nouveau modeset=0\n' > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 case $platform in
   "fedora")
     sudo /usr/bin/dracut --force
@@ -89,17 +89,17 @@ case $platform in
     esac
     ;;
   "debian")
-    sudo /usr/bin/apt -y install dkms pciutils curl
     sudo /usr/bin/apt-get update -y
     sudo /usr/bin/apt-get dist-upgrade -y
+    sudo /usr/bin/apt -y install dkms pciutils curl
     KERNELINSTALLED=$(/usr/bin/dpkg --list | grep linux-image | grep -v meta-package | sort -V -r | head -n 1 | cut -d' ' -f3)
     KERNELVERSION=${KERNELINSTALLED##linux-image-}
     sudo /usr/bin/apt install -y linux-headers-$KERNELVERSION
     ;;
   "ubuntu")
-    sudo /usr/bin/apt -y install dkms pciutils
     sudo /usr/bin/apt-get update -y
     sudo /usr/bin/apt-get dist-upgrade -y
+    sudo /usr/bin/apt -y install dkms pciutils
     KERNELINSTALLED=$(/usr/bin/dpkg --list | grep linux-image | grep generic | sort -V -r | head -n 1 | cut -d' ' -f3)
     KERNELVERSION=${KERNELINSTALLED##linux-image-}
     sudo /usr/bin/apt install -y linux-headers-$KERNELVERSION
