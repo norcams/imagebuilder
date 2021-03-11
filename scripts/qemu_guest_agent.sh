@@ -37,9 +37,10 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
   "fedora")
-    sudo dnf install -y qemu-guest-agent \
-    && sudo systemctl enable qemu-guest-agent.service
-    sudo dnf clean all
+    #sudo dnf install -y qemu-guest-agent \
+    #&& sudo systemctl enable qemu-guest-agent.service
+    #sudo dnf clean all
+    echo "qemu guest agent disabled on Fedora due to freeze issues"
     ;;
   "el")
     case $major_version in
