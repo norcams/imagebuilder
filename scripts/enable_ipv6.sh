@@ -61,6 +61,20 @@ network:
       - type: dhcp6
 EOF
     ;;
+  "ubuntu")
+cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 2
+  ethernets:
+  # opaque ID for physical interfaces, only referred to by other stanzas
+    local_if:
+      match:
+        name: e*
+      accept-ra: true
+      dhcp6: true
+      dhcp4: true
+EOF
+    ;;
   "el")
     case $major_version in
       "6")
