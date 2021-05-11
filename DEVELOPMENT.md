@@ -3,7 +3,7 @@
 ``` bash
 yum install -y python-virtualenv
 cd /opt
-mv magebuilder/ rpm.imagebuilder/
+mv imagebuilder/ rpm.imagebuilder/
 git clone https://github.com/norcams/imagebuilder
 cd imagebuilder
 virtualenv . -p /usr/bin/python3
