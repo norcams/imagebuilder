@@ -44,23 +44,16 @@ class BuildFunctions(object):
 
     def create_keypairs(self):
         """Creates a temporary keypair"""
+
         keyname = "imagebuilder-" + str(uuid.uuid4().hex)
-        keypair = self.nova.keypairs.create(name=keyname)
-        private_key = keypair.private_key
-        '''We need to convert the generated RSA-key from BER to DER because of
-        https://github.com/mitchellh/packer/issues/2526'''
-        with tempfile.NamedTemporaryFile(delete=True) as temp:
-            temp.write(bytes(private_key, 'ascii'))
-            temp.flush()
-            keypath = os.path.join(self.tmp_dir, 'packerKey')
-            openssl_cmd = ['openssl', 'rsa', '-in', temp.name, '-out', keypath]
-            process = subprocess.Popen(openssl_cmd,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT)
-            process.wait()
-            os.chmod(keypath, 0o600)
-            #pylint: disable=logging-not-lazy
-            logging.info("Saved private key in %s" % keypath)
+        cmd = "/usr/bin/ssh-keygen -b 521 -t ecdsa -N '' -f " + os.path.join(self.tmp_dir, keyname)
+        out = subprocess.call(cmd, shell=True)         # generate temporary ssh key
+        if out:                                        # something went wrong with the key generation
+                return '', 0
+        # read public key string and store into Openstack
+        with open(os.path.join(self.tmp_dir, keyname) + ".pub", "r") as pubfile:
+               pubkeystring = pubfile.read().replace('\n', '')
+        keypair = self.nova.keypairs.create(name=keyname, public_key=pubkeystring)
         return keyname, keypair.id
 
     def create_security_group(self):
@@ -154,8 +147,8 @@ class BuildFunctions(object):
         avail_zone_var = 'availability_zone=' + self.avail_zone
         secgroup_var = 'security_group=' + secgroup_name
         sshuser_var = 'ssh_username=' + self.ssh_user
-        keyname_var = 'ssh_keypair_name=' + key_name
-        keypath_var = 'ssh_key_path=' + os.path.join(self.tmp_dir, 'packerKey')
+        keyname_var = 'ssh_keypair_name=' + key_name                           # key as it is named in Openstack
+        keypath_var = 'ssh_key_path=' + os.path.join(self.tmp_dir, key_name)   # the "real" private key
         flavor_var = 'flavor=' + self.flavor
         network_var = 'network=' + network_id
         source_image_var = 'source_image=' + self.source_image
