@@ -56,13 +56,13 @@ case $platform in
     ;;
   "debian")
     sudo apt-get update \
-    && sudo apt-get install qemu-guest-agent -y
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install qemu-guest-agent -y
     # agent is vendor enabled on Debian
     sudo apt-get clean
     ;;
   "ubuntu")
     sudo apt-get update \
-    && sudo apt-get install qemu-guest-agent -y
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install qemu-guest-agent -y
     # agent is vendor enabled on Debian
     sudo apt-get clean
     ;;

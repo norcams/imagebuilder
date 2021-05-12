@@ -61,7 +61,7 @@ case $platform in
     ;;
   "debian")
     sudo apt-get update \
-    && sudo apt-get install unattended-upgrades apt-listchanges -y \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install unattended-upgrades apt-listchanges -y \
     && sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
     sudo apt-get clean
     sudo rm -rf /var/lib/apt/lists/*
@@ -69,7 +69,7 @@ case $platform in
     ;;
   "ubuntu")
     sudo apt-get update \
-    && sudo apt-get install unattended-upgrades apt-listchanges -y \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install unattended-upgrades apt-listchanges -y \
     && sudo sed -i -e 's/"0"/"1"/' /etc/apt/apt.conf.d/20auto-upgrades
     sudo apt-get clean
     sudo rm -rf /var/lib/apt/lists/*

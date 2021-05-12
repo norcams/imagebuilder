@@ -39,7 +39,7 @@ case $platform in
     ;;
   "debian")
     sudo apt-get update \
-    && DEBIAN_FRONTEND=noninteractive sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade \
     && sudo apt-get autoremove -y; \
     sudo apt-get clean; \
     sudo rm -rf /var/lib/apt/lists/*; \
@@ -47,7 +47,7 @@ case $platform in
     ;;
   "ubuntu")
     sudo apt-get update \
-    && DEBIAN_FRONTEND=noninteractive sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade \
     && sudo apt-get autoremove -y; \
     sudo apt-get clean; \
     sudo rm -rf /var/lib/apt/lists/*; \
