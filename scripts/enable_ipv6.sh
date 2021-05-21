@@ -33,7 +33,7 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     case $major_version in
-      "31"|"32")
+      "32"|"33"|"34")
         echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
         echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
           && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
