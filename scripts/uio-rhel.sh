@@ -33,7 +33,7 @@ sudo rm -f /tmp/katello-ca-consumer-latest.noarch.rpm
 # Register host
 sudo subscription-manager config --server.server_timeout=1800
 sudo subscription-manager clean
-sudo subscription-manager register --org=UiO --activationkey=satellite --name=nrec-rhel7-image
+sudo subscription-manager register --org=UiO --activationkey=satellite --name=nrec-rhel${os_ver}-image
 sudo subscription-manager config --server.server_timeout=180
 
 # Installing RHEL GPG keys
