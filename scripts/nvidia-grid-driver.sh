@@ -108,7 +108,7 @@ esac
 
 # Get latest NVIDIA GRID package and build with dkms for newest installed kernel
 cd /tmp
-/usr/bin/curl -O https://iaas-repo.uio.no/uh-iaas/nrec-resources/files/nvidia-vgpu/linux-grid-latest
+/usr/bin/curl -O https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/linux-grid-latest
 chmod +x linux-grid-latest
 sudo ./linux-grid-latest --dkms -n -s -k $KERNELVERSION
 
