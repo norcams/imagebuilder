@@ -7,8 +7,12 @@
 #
 
 # Set license server based on region for the running instance
-if $(grep -ir bgo-default /run/cloud-init/ &>/dev/null); then licserver=lisens8.uib.no; fi
-if $(grep -ir osl-default /run/cloud-init/ &>/dev/null); then licserver=placeholder.example.com; fi
+if grep -q -ir 'bgo-default' /run/cloud-init/; then
+    licserver=lisens8.uib.no
+elif grep -q -ir 'osl-default' /run/cloud-init/; then
+    licserver=lisens-nvidia-01.uio.no
+    backup_licserver=lisens-nvidia-02.uio.no
+fi
 
 # Find distribution and major version
 # Platform detection borrowed from Omnitruck install script
@@ -116,6 +120,9 @@ sudo ./linux-grid-latest --dkms -n -s -k $KERNELVERSION
 cd /etc/nvidia/
 sudo cp gridd.conf.template gridd.conf
 sudo sed -i "s/^ServerAddress=/ServerAddress=$licserver/" gridd.conf
+if [ "x${backup_licserver}" != "x" ]; then
+    sudo sed -i "s/^BackupServerAddress=/BackupServerAddress=$backup_licserver/" gridd.conf
+fi
 
 # Clean up the driver package
 cd /tmp
