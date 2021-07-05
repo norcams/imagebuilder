@@ -121,7 +121,7 @@ cd /etc/nvidia/
 sudo cp gridd.conf.template gridd.conf
 sudo sed -i "s/^ServerAddress=/ServerAddress=$licserver/" gridd.conf
 if [ "x${backup_licserver}" != "x" ]; then
-    sudo sed -i "s/^BackupServerAddress=/BackupServerAddress=$backup_licserver/" gridd.conf
+    sudo sed -i "s/^#BackupServerAddress=/BackupServerAddress=$backup_licserver/" gridd.conf
 fi
 
 # Clean up the driver package
