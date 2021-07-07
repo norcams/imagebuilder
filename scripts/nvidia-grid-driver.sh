@@ -70,13 +70,13 @@ case $platform in
     'fedora')
 	sudo dnf install -y pciutils dkms kernel-devel kernel-headers
 	sudo dnf upgrade -y kernel kernel-devel kernel-headers
-	KERNELVERSION=$(grubby --default-kernel | sed 's|/boot/vmlinuz-||')
+	KERNELVERSION=$(sudo grubby --default-kernel | sed 's|/boot/vmlinuz-||')
 	;;
     'el')
 	sudo yum install -y pciutils epel-release
 	sudo yum install -y dkms kernel-devel kernel-headers
 	sudo yum upgrade -y kernel kernel-devel kernel-headers
-	KERNELVERSION=$(grubby --default-kernel | sed 's|/boot/vmlinuz-||')
+	KERNELVERSION=$(sudo grubby --default-kernel | sed 's|/boot/vmlinuz-||')
 	;;
     'debian')
 	sudo apt-get update -y
