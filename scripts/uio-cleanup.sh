@@ -29,14 +29,14 @@ esac
 sudo yum clean all
 sudo subscription-manager unregister
 sudo subscription-manager clean
-sudo rm -f /etc/pki/consumer/*
-sudo rm -f /etc/pki/entitlement/*
+sudo sh -c 'rm -f /etc/pki/consumer/*'
+sudo sh -c 'rm -f /etc/pki/entitlement/*'
 sudo rm -f /etc/rhsm/facts/katello.facts
 
 # Clean CFEngine, SSHD, Nivlheim
-sudo rm -f /var/cfengine/ppkeys/localhost.*
-sudo rm -f /etc/ssh/ssh_host_*
-sudo rm -f /var/nivlheim/*
+sudo sh -c 'rm -f /var/cfengine/ppkeys/localhost.*'
+sudo sh -c 'rm -f /etc/ssh/ssh_host_*'
+sudo sh -c 'rm -f /var/nivlheim/*'
 
 # Make NetworkManager update resolv.conf
 test -f /etc/NetworkManager/conf.d/99-cloud-init.conf && sudo rm -f /etc/NetworkManager/conf.d/99-cloud-init.conf
