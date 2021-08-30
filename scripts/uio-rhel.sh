@@ -25,6 +25,9 @@ case $os_ver in
 	;;
 esac
 
+# Get a random hex
+random_hex=$(openssl rand -hex 8)
+
 # Get and install Satellite certificate
 sudo curl -k https://satellite.uio.no/pub/katello-ca-consumer-latest.noarch.rpm -o /tmp/katello-ca-consumer-latest.noarch.rpm
 sudo yum -y --nogpgcheck install /tmp/katello-ca-consumer-latest.noarch.rpm
@@ -33,7 +36,7 @@ sudo rm -f /tmp/katello-ca-consumer-latest.noarch.rpm
 # Register host
 sudo subscription-manager config --server.server_timeout=1800
 sudo subscription-manager clean
-sudo subscription-manager register --org=UiO --activationkey=satellite --name=nrec-rhel${os_ver}-image
+sudo subscription-manager register --org=UiO --activationkey=satellite --name=nrec-rhel${os_ver}-image-${random_hex}
 sudo subscription-manager config --server.server_timeout=180
 
 # Installing RHEL GPG keys
@@ -83,9 +86,13 @@ sudo touch /etc/uio/flag/server
 sudo yum -y install uio-cfengine
 
 # Initializing CFEngine
-sudo mkdir -p /var/cfengine/{bin,ppkeys,inputs}
+sudo mkdir -p /var/cfengine/bin
+sudo mkdir -p /var/cfengine/ppkeys
+sudo mkdir -p /var/cfengine/inputs
 sudo chmod 700 /var/cfengine/ppkeys
-sudo cp -f /opt/cfengine/sbin/cf-{agent,key,promises} /var/cfengine/bin
+sudo cp -f /opt/cfengine/sbin/cf-agent /var/cfengine/bin
+sudo cp -f /opt/cfengine/sbin/cf-key /var/cfengine/bin
+sudo cp -f /opt/cfengine/sbin/cf-promises /var/cfengine/bin
 sudo cp -f /opt/cfengine/inputs/failsafe.cf /var/cfengine/inputs
 sudo /var/cfengine/bin/cf-key
 sudo /var/cfengine/bin/cf-agent -f /var/cfengine/inputs/failsafe.cf
