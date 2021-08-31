@@ -14,5 +14,8 @@ if [ -f /var/lib/dbus/machine-id ]; then
     echo -n "" | sudo tee /var/lib/dbus/machine-id
 fi
 
+# Remove ssh host keys
+sudo sh -c 'rm -f /etc/ssh/ssh_host_*'
+
 # Just fstrim for now
 sudo fstrim / || true

@@ -33,9 +33,8 @@ sudo sh -c 'rm -f /etc/pki/consumer/*'
 sudo sh -c 'rm -f /etc/pki/entitlement/*'
 sudo rm -f /etc/rhsm/facts/katello.facts
 
-# Clean CFEngine, SSHD, Nivlheim
+# Clean CFEngine, Nivlheim
 sudo sh -c 'rm -f /var/cfengine/ppkeys/localhost.*'
-sudo sh -c 'rm -f /etc/ssh/ssh_host_*'
 sudo sh -c 'rm -f /var/nivlheim/*'
 
 # Make NetworkManager update resolv.conf
