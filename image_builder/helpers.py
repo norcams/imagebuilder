@@ -27,6 +27,8 @@ class Helpers(object):
         particularly large files.  Also ensures memory usage is kept to a
         minimum. Testing shows default is a pretty good size."""
         assert isinstance(chunk_size, int) and chunk_size > 0
+        if digest == 'sha512':
+            digest = hashlib.sha512()
         if digest == 'sha256':
             digest = hashlib.sha256()
         elif digest == 'md5':
