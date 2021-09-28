@@ -159,6 +159,10 @@ and try again.""")
             properties['hw_disk_bus'] = 'scsi'
             properties['hw_scsi_model'] = 'virtio-scsi'
 
+        if commands.bootstrap_args.efi:
+            properties['hw_firmware_type'] = 'uefi'
+            properties['hw_machine_type'] = 'q35'
+
         properties['hw_rng_model'] = 'virtio'
 
         bootstrap = BootstrapFunctions(ib_session,
