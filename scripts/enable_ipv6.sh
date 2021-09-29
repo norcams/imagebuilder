@@ -37,7 +37,7 @@ case $platform in
         echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
         echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
           && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
-cat <<- EOF | sudo tee /etc/sysconfig/network-scripts/ifcfg-eth0
+        cat <<- EOF | sudo tee /etc/sysconfig/network-scripts/ifcfg-eth0
 BOOTPROTO=dhcp
 DEVICE=eth0
 DHCPV6C=yes
@@ -53,7 +53,7 @@ EOF
   "debian")
     case $major_version in
       "9"|"10")
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+        cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 1
   config:
@@ -62,9 +62,9 @@ network:
     subnets:
       - type: dhcp6
 EOF
-    ;;
+        ;;
       "11")
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+        cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 2
   ethernets:
@@ -76,9 +76,11 @@ network:
       dhcp6: true
       dhcp4: true
 EOF
+        ;;
+    esac
     ;;
   "ubuntu")
-cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+      cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 2
   ethernets:
