@@ -108,6 +108,10 @@ class Commands(object):
                             help='Do not create image with scsi disk properties',
                             action='store_true',
                             default=False)
+        parser.add_argument('-e', '--efi',
+                            help='Boot image with uefi boot firmware',
+                            action='store_true',
+                            default=False)
         parser.add_argument('-v', '--verbose',
                             help='Be verbose',
                             action='store_true',
