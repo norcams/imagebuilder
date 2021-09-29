@@ -66,15 +66,13 @@ EOF
       "11")
         cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
-  version: 2
-  ethernets:
-  # opaque ID for physical interfaces, only referred to by other stanzas
-    local_if:
-      match:
-        name: e*
-      accept-ra: true
-      dhcp6: true
-      dhcp4: true
+  version: 1
+  config:
+  - type: physical
+    name: enp1s0
+    subnets:
+      - type: dhcp
+      - type: dhcp6
 EOF
         ;;
     esac
