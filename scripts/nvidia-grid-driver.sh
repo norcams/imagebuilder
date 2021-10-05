@@ -100,7 +100,7 @@ esac
 cd /tmp
 curl -O https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/linux-grid-latest
 chmod +x linux-grid-latest
-sudo ./linux-grid-latest --dkms -n -s -k $KERNELVERSION
+sudo ./linux-grid-latest --dkms --no-drm -n -s -k $KERNELVERSION
 
 # Configure license server for the GRID software based on region
 cd /etc/nvidia
