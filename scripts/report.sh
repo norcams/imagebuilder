@@ -80,7 +80,7 @@ fi
 
 major_version=`echo $platform_version | cut -d. -f1`
 
-url="https://report.uh-iaas.no/downloads/${platform}/${major_version}/v1/report"
+url="https://report.nrec.no/downloads/${platform}/${major_version}/v1/report"
 
 case $platform in
   "el")
