@@ -46,7 +46,7 @@ case $platform in
       "6")
         # We don't support RHEL 6 for this
         ;;
-      "7"|"8")
+      "7"|"8"|"9")
         # The agent is installed by default
         sudo systemctl enable qemu-guest-agent.service
         sudo yum clean all
