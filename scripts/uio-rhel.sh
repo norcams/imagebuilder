@@ -57,11 +57,11 @@ sudo yum -y upgrade
 # Installing UiO yum repos and GPG key
 case $os_ver in
     7) 
-	sudo yum -y --nogpgcheck install http://rpm.uio.no/uio-free/rhel/7/x86_64/uio-release-7-2.noarch.rpm
+	sudo yum -y --nogpgcheck install http://rpm.uio.no/uio-el7-free/latest/x86_64/Packages/u/uio-release-7-2.noarch.rpm
 	sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-UIO
 	;;
     8) 
-	sudo yum -y --nogpgcheck install http://rpm.uio.no/uio-free/rhel/8/x86_64/uio-release-8-1.el8.noarch.rpm
+	sudo yum -y --nogpgcheck install http://rpm.uio.no/uio-el8-free/latest/x86_64/Packages/u/uio-release-8-1.el8.noarch.rpm
 	sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-uio-el8-free
 	;;
 esac
