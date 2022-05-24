@@ -1,5 +1,5 @@
 keystoneauth1
-python-novaclient<8.0.0
+python-novaclient
 python-glanceclient
 python-neutronclient
 cryptography==3.3.2
