@@ -25,6 +25,7 @@
       "scripts/enable_ipv6.sh",
       "scripts/autopatch.sh",
       "scripts/report.sh",
+      "scripts/sshd_hardening.sh",
       "{{user `provision_script`}}",
       "scripts/cleanup.sh",
       "scripts/uio-cleanup.sh"
