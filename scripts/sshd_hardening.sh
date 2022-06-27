@@ -5,7 +5,7 @@ PATH=/usr/bin:/usr/sbin
 export PATH
 
 # Variables
-SSHD_CONF=/etc/sshd_config
+SSHD_CONF=/etc/ssh/sshd_config
 SSHD_TMP=$(mktemp)
 
 # Add desired hardening block, creating temporary file
