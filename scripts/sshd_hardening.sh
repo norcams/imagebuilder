@@ -9,7 +9,7 @@ SSHD_CONF=/etc/ssh/sshd_config
 SSHD_TMP=$(mktemp)
 
 # Add desired hardening block, creating temporary file
-awk '
+sudo awk '
 { print }
 /#ListenAddress ::/ {
     print ""
@@ -26,4 +26,7 @@ awk '
 ' $SSHD_CONF > $SSHD_TMP
 
 # Replace with edited file
-mv -f $SSHD_TMP $SSHD_CONF
+sudo cp -f $SSHD_TMP $SSHD_CONF
+
+# Remove temporary file
+sudo rm -f $SSHD_TMP
