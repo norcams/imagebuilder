@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set proper PATH
-PATH=/usr/bin:/usr/sbin
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
 export PATH
 
 # Variables
