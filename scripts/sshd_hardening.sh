@@ -8,6 +8,9 @@ export PATH
 SSHD_CONF=/etc/ssh/sshd_config
 SSHD_TMP=$(mktemp)
 
+# Comment out settings we want to set, if set from distro
+sed -i -e 's/^\(HostKey\|KexAlgorithms\|Ciphers\|MACs\|HostkeyAlgorithms\) /#\1 /g' $SSHD_CONF
+
 # Add desired hardening block, creating temporary file
 sudo awk '
 { print }
