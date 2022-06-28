@@ -4,6 +4,17 @@
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 export PATH
 
+# Get OS info
+test -f /etc/os-release && . /etc/os-release
+os_id=$ID
+os_ver=$(echo $VERSION_ID | cut -d. -f1)
+
+# Avoid RHEL, sshd_config etc. is managed elsewhere
+if [ "$os_id" == 'rhel' ]; then
+    echo "sshd hardening not applicable for $os_id"
+    exit 0
+fi
+
 # Variables
 SSHD_CONF=/etc/ssh/sshd_config
 SSHD_TMP=$(mktemp)
