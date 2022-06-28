@@ -33,19 +33,18 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     case $major_version in
-      "32"|"33"|"34")
-        echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
-        echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
-          && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
-        cat <<- EOF | sudo tee /etc/sysconfig/network-scripts/ifcfg-eth0
-BOOTPROTO=dhcp
-DEVICE=eth0
-DHCPV6C=yes
-IPV6INIT=yes
-IPV6_AUTOCONF=yes
-ONBOOT=yes
-TYPE=Ethernet
-USERCTL=no
+      "36")
+        cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 2
+  ethernets:
+  # opaque ID for physical interfaces, only referred to by other stanzas
+    local_if:
+      match:
+        name: e*
+      accept-ra: true
+      dhcp6: true
+      dhcp4: true
 EOF
         ;;
     esac
