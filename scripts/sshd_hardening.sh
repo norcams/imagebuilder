@@ -30,3 +30,8 @@ sudo cp -f $SSHD_TMP $SSHD_CONF
 
 # Remove temporary file
 sudo rm -f $SSHD_TMP
+
+# Opting out of system-wide crypto policies (RHEL-based distros)
+if [ -f /etc/sysconfig/sshd ]; then
+    sudo sed -i -e 's/^#[[:space:]]*\(CRYPTO_POLICY=\)/\1/' /etc/sysconfig/sshd
+fi
