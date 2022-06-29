@@ -131,8 +131,9 @@ and try again.""")
         build.cleanup(secgroup_id, keypair_id)
         if commands.build_args.purge_source:
             if build.delete_image(source_image):
-                exitcode = 0
+                logging.info('Successfully deleted source image')
             else:
+                logging.info('Failed to delete source image')
                 exitcode = 1
         helpers.clean_tmp_files(build.tmp_dir)
 
