@@ -109,6 +109,20 @@ EOF
         # Bug in upstream cloud image, workaround here as this is considered temporary
         sudo sed -i '/nameserver 192.168.122.1/d' /etc/resolv.conf
         ;;
+      "9")
+        cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 2
+  ethernets:
+  # opaque ID for physical interfaces, only referred to by other stanzas
+    local_if:
+      match:
+        name: e*
+      accept-ra: true
+      dhcp6: true
+      dhcp4: true
+EOF
+        ;;
     esac
     ;;
 esac
