@@ -16,9 +16,9 @@ if [ "$os_id" != 'rhel' ]; then
     exit 0
 fi
 
-# Only RHEL 7.x and 8.x
+# Only RHEL 7, 8, 9
 case $os_ver in
-    7|8) ;;
+    7|8|9) ;;
     *)
 	echo "This is not a supported RHEL version: os_ver = '$os_ver'"
 	exit 0
