@@ -92,11 +92,7 @@ EOF
     ;;
   "el")
     case $major_version in
-      "6")
-        echo "NETWORKING_IPV6=\"yes\"" | sudo tee -a /etc/sysconfig/network \
-          && echo -e "IPV6INIT=\"yes\"\nDHCPV6C=\"yes\"" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
-        ;;
-      "7"|"8")
+      "7")
         sudo yum -y install NetworkManager
 cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
@@ -109,7 +105,7 @@ EOF
         # Bug in upstream cloud image, workaround here as this is considered temporary
         sudo sed -i '/nameserver 192.168.122.1/d' /etc/resolv.conf
         ;;
-      "9")
+      "8"|"9")
         cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 2
