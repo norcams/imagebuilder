@@ -39,6 +39,14 @@ sudo subscription-manager clean
 sudo subscription-manager register --org=UiO --activationkey=satellite --name=nrec-rhel${os_ver}-image-${random_hex}
 sudo subscription-manager config --server.server_timeout=180
 
+# Enabling additional repos
+case $os_ver in
+    9)
+	sudo subscription-manager repos --enable=rhel-9-for-x86_64-supplementary-rpms
+	sudo subscription-manager repos --enable=codeready-builder-for-rhel-9-x86_64-rpms
+	;;
+esac
+
 # Installing RHEL GPG keys
 sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
