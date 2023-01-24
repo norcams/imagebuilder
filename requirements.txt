@@ -3,4 +3,4 @@ python-novaclient==17.4.0
 python-glanceclient==3.3.0
 python-neutronclient==7.3.0
 cryptography==36.0.1
-pbr==5.9.0
+pbr==5.8.0
