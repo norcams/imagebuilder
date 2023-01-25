@@ -33,7 +33,7 @@ major_version=`echo $platform_version | cut -d. -f1`
 case $platform in
   "fedora")
     case $major_version in
-      "36")
+      *)
         cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 2
