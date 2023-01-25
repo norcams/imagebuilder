@@ -8,6 +8,7 @@ import time
 import uuid
 from novaclient import client as novaclient
 from neutronclient.v2_0 import client as neutronclient
+from glanceclient import Client as glanceclient
 from .helpers import Helpers as helpers
 
 class BuildFunctions(object):
@@ -34,6 +35,7 @@ class BuildFunctions(object):
         self.tmp_dir = helpers.make_tmp_dir()
         self.nova = novaclient.Client("2", session=session, region_name=region)
         self.neutron = neutronclient.Client(session=session, region_name=region)
+        self.glance = glanceclient('2', session=session, region_name=region)
 
     def cleanup(self, secgroup_id, keypair_id):
         """Cleans up the mess we've made"""
@@ -95,11 +97,10 @@ class BuildFunctions(object):
 
     def delete_image(self, image_id):
         logging.info('Removing image %s' % image_id)
-        #self.nova.images.delete(image_id)
         if(image_id is not None):
             try:
                 logging.info('Removing image %s' % image_id)
-                self.nova.images.delete(image_id)
+                self.glance.images.delete(image_id)
                 return True
             except:
                 logging.info('Removing image failed.')
