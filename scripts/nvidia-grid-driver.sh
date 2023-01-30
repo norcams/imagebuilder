@@ -14,18 +14,6 @@ set -x
 set -u
 set -e
 
-# Set license server based on region for the running instance
-if grep -q -ir 'bgo-default' /run/cloud-init/; then
-    licserver='lisens8.uib.no'
-    backup_licserver=''
-elif grep -q -ir 'osl-default' /run/cloud-init/; then
-    licserver='lisens-nvidia-01.uio.no'
-    backup_licserver='lisens-nvidia-02.uio.no'
-else
-    licserver='placeholder.example.com'
-    backup_licserver=''
-fi
-
 # Find distribution and major version
 # Platform detection borrowed from Omnitruck install script
 # Debian-family and RedHat-family are currently supported
@@ -102,12 +90,18 @@ curl -O https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/linux
 chmod +x linux-grid-latest
 sudo ./linux-grid-latest --dkms --no-drm -n -s -k $KERNELVERSION
 
-# Configure license server for the GRID software based on region
-cd /etc/nvidia
-sudo cp gridd.conf.template gridd.conf
-sudo sed -i "s/^ServerAddress=/ServerAddress=$licserver/" gridd.conf
-if [ "x${backup_licserver}" != "x" ]; then
-    sudo sed -i "s/^#BackupServerAddress=/BackupServerAddress=$backup_licserver/" gridd.conf
+# Configure gridd.conf and licensing based on region
+if grep -q -ir 'bgo-default' /run/cloud-init/; then
+    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-BGO \
+	 -s -o /etc/nvidia/gridd.conf
+elif grep -q -ir 'osl-default' /run/cloud-init/; then
+    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-OSL \
+	 -s -o /etc/nvidia/gridd.conf
+    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/client_configuration_token_01-30-2023-12-20-51.tok \
+	 -s -o /etc/nvidia/ClientConfigToken/client_configuration_token_01-30-2023-12-20-51.tok
+else
+    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-default \
+	 -s -o /etc/nvidia/gridd.conf
 fi
 
 # Clean up the driver package
