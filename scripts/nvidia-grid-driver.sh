@@ -91,17 +91,13 @@ chmod +x linux-grid-latest
 sudo ./linux-grid-latest --dkms --no-drm -n -s -k $KERNELVERSION
 
 # Configure gridd.conf and licensing based on region
-if grep -q -ir 'bgo-default' /run/cloud-init/; then
-    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-BGO \
-	 -s -o /etc/nvidia/gridd.conf
-elif grep -q -ir 'osl-default' /run/cloud-init/; then
-    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-OSL \
-	 -s -o /etc/nvidia/gridd.conf
-    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/client_configuration_token_01-30-2023-12-20-51.tok \
-	 -s -o /etc/nvidia/ClientConfigToken/client_configuration_token_01-30-2023-12-20-51.tok
+if sudo grep -q -ir 'bgo-default' /run/cloud-init/; then
+    sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-BGO -o /etc/nvidia/gridd.conf
+elif sudo grep -q -ir 'osl-default' /run/cloud-init/; then
+    sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-OSL -o /etc/nvidia/gridd.conf
+    sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/client_configuration_token_01-30-2023-12-20-51.tok -s -o /etc/nvidia/ClientConfigToken/client_configuration_token_01-30-2023-12-20-51.tok
 else
-    sudo curl https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-default \
-	 -s -o /etc/nvidia/gridd.conf
+    sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-default -o /etc/nvidia/gridd.conf
 fi
 
 # Clean up the driver package
