@@ -128,5 +128,5 @@ which could be useful in automated builds.
 
 #### Listing availability zones
 
-When using Packer with UH-IaaS setting the availability zone is also required.
+When using Packer with NREC setting the availability zone is also required.
 `openstack availability zone list` lists availability zones for your region.
