@@ -1,16 +1,16 @@
 # imagebuilder
 
-Image Builder for UH IaaS
+Image Builder for [NREC](https://www.nrec.no)
 
 imagebuilder is a Command Line Interface for building fully provisioned,
-ready-to-use images/snapshots in UH IaaS using [Packer](https://packer.io).
+ready-to-use images/snapshots in NREC using [Packer](https://packer.io).
 
 It's basically just a wrapper for Packer doing the necessary steps required to
-make Packer work with UH IaaS default configurations, and without the need to
+make Packer work with NREC default configurations, and without the need to
 make or edit templates.
 
 imagebuilder is meant to simplify the process of making and automate the
-buildling of machine images in UH IaaS using only the command-line. For more
+buildling of machine images in NREC using only the command-line. For more
 advanced image building you should learn [how to use
 Packer](https://www.packer.io/docs/).
 
