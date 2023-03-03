@@ -1,0 +1,6 @@
+-e git+https://github.com/norcams/imagebuilder.git#egg=imagebuilder
+keystoneauth1
+python-novaclient
+python-glanceclient
+python-neutronclient
+python-openstackclient
