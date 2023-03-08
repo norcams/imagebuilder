@@ -76,8 +76,8 @@ case $platform in
 	;;
     'ubuntu')
 	sudo apt-get update -y
-	sudo apt-get dist-upgrade -y
-	sudo apt -y install dkms pciutils
+	sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+	sudo DEBIAN_FRONTEND=noninteractive apt -y install dkms pciutils
 	KERNELINSTALLED=$(dpkg --list | grep linux-image | grep generic | sort -V -r | head -n 1 | cut -d' ' -f3)
 	KERNELVERSION=${KERNELINSTALLED##linux-image-}
 	sudo apt install -y linux-headers-$KERNELVERSION
