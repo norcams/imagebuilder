@@ -19,9 +19,9 @@
   }],
   "provisioners": [{
     "scripts": [
-      "src/imagebuilder/scripts/upgrade.sh",
+      "../scripts/upgrade.sh",
       "{{user `provision_script`}}",
-      "src/imagebuilder/scripts/cleanup.sh"
+      "../scripts/cleanup.sh"
     ],
     "type": "shell"
   }]
