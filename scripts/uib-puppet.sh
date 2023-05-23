@@ -16,14 +16,14 @@ sudo touch /opt/uib/uib-firstboot
 # Add bootstrap puppet code
 cat <<-EOF | sudo tee /opt/uib/uib-bootstrap.pp
 class { 'puppet':
-  server           => false,
-  server_foreman   => false,
-  agent            => true,
-  runmode          => 'none',
-  puppetmaster     => 'puppetserver04.uib.no',
-  ca_server        => 'puppetca.uib.no',
-  environment      => 'production',
-  client_certname  => \$facts['client_certname']
+  server              => false,
+  server_foreman          => false,
+  agent                   => true,
+  runmode                 => 'none',
+  agent_server_hostname   => 'puppetserver04.uib.no',
+  ca_server               => 'puppetca.uib.no',
+  environment             => 'production',
+  client_certname         => \$facts['client_certname']
 }
 EOF
 
