@@ -16,7 +16,7 @@ sudo touch /opt/uib/uib-firstboot
 # Add bootstrap puppet code
 cat <<-EOF | sudo tee /opt/uib/uib-bootstrap.pp
 class { 'puppet':
-  server              => false,
+  server                  => false,
   server_foreman          => false,
   agent                   => true,
   runmode                 => 'none',
