@@ -2,8 +2,6 @@ import json
 import logging
 import os
 import subprocess
-import sys
-import tempfile
 import time
 import uuid
 from novaclient import client as novaclient
