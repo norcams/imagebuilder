@@ -19,3 +19,7 @@ sudo sh -c 'rm -f /etc/ssh/ssh_host_*'
 
 # Just fstrim for now
 sudo fstrim / || true
+
+# Clean up authorized_keys
+: > ~/.ssh/authorized_keys
+sudo bash -c ': > /root/.ssh/authorized_keys'
