@@ -23,3 +23,16 @@ From the example directory, run:
 source $HOME/keystore_rc.sh # Make credentials available in ENV. See NREC API documentation for details
 ./imagebuilder build -n test-image-el8-$(date +%Y-%m-%d) -s $(openstack image show 'GOLD Alma Linux 8' -c id -f value) -a bgo-default-1 -u almalinux -p provision.sh -v --debug
 ```
+
+### Test build
+
+See `terraform/` for a terraform example to test the image. Edit `main.tf` with image id from build
+(and any other changes needed like region, security_group, etc). 
+
+After edit run terraform with ansible inventory output:
+
+``` bash
+terraform init
+terraform apply
+terraform output -raw ansible_inventory_v4
+```
