@@ -51,7 +51,7 @@ EOF
     ;;
   "debian")
     case $major_version in
-      "9"|"10")
+      "10")
         cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 1
@@ -62,7 +62,7 @@ network:
       - type: dhcp6
 EOF
         ;;
-      "11")
+      "11"|"12")
         cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 1
