@@ -16,6 +16,7 @@ class BootstrapFunctions(object):
 
     def download_and_check(self, url, checksum_url=None, checksum_dig='sha256'):
         user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+        CHUNK      = 16 * 1024
         file_name  = url.split("/")[-1]
         file_path  = os.path.join(self.tmp_dir, file_name)
         req = urllib.request.Request(
@@ -27,7 +28,11 @@ class BootstrapFunctions(object):
         )
         response = urllib.request.urlopen(req)
         with open(file_path, "wb") as f:
-            f.write(response.read())
+            while True:
+                chunk = response.read(CHUNK)
+                if not chunk:
+                    break
+                f.write(chunk)
         response.close()
         if int(response.headers["content-length"]) < 1000:
             logging.info("File is too small: %s" % url)
