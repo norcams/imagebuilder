@@ -15,16 +15,34 @@ class BootstrapFunctions(object):
         self.glance = Client("2", session=session, region_name=region)
 
     def download_and_check(self, url, checksum_url=None, checksum_dig='sha256'):
-        file_name = url.split("/")[-1]
-        file_path = os.path.join(self.tmp_dir, file_name)
-        (image_file, headers) = urllib.request.urlretrieve(url, file_path)
-        if int(headers["content-length"]) < 1000:
+        user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+        file_name  = url.split("/")[-1]
+        file_path  = os.path.join(self.tmp_dir, file_name)
+        req = urllib.request.Request(
+            url,
+            data=None,
+            headers = {
+                'User-Agent':  user_agent
+            }
+        )
+        response = urllib.request.urlopen(req)
+        with open(file_path, "wb") as f:
+            f.write(response.read())
+        response.close()
+        if int(response.headers["content-length"]) < 1000:
             logging.info("File is too small: %s" % url)
-            os.remove(file_name)
+            os.remove(file_path)
             return None
         if checksum_url:
+            req = urllib.request.Request(
+                checksum_url,
+                data=None,
+                headers = {
+                    'User-Agent':  user_agent
+                }
+            )
             logging.info("Verifying checksum of %s..." % file_path)
-            response = urllib.request.urlopen(checksum_url)
+            response = urllib.request.urlopen(req)
             checksum_all = str(response.read())
             response.close()
             logging.debug(checksum_all)
@@ -32,12 +50,12 @@ class BootstrapFunctions(object):
             checksum_file = helpers.checksum_file(file_path, checksum_dig)
             if checksum_file in checksum_all:
                 logging.info("Checksum ok: %s" % checksum_file)
-                return image_file
+                return file_path
             else:
                 logging.info("Checksum not ok: %s" % checksum_file)
                 return None
         else:
-            return image_file
+            return file_path
 
     def create_glance_image(self, image_file, name, disk_format, min_disk,
                             min_ram, properties):
