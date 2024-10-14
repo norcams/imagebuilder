@@ -93,6 +93,8 @@ sudo ./linux-grid-latest --dkms --no-drm -n -s -k $KERNELVERSION
 # Configure gridd.conf and licensing based on region
 if sudo grep -q -ir 'bgo-default' /run/cloud-init/; then
     sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-BGO -o /etc/nvidia/gridd.conf
+    sudo mkdir -p /etc/nvidia/ClientConfigToken
+    sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/client_configuration_token_10-07-2024-11-23-46.tok -s -o /etc/nvidia/ClientConfigToken/client_configuration_token_10-07-2024-11-23-46.tok
 elif sudo grep -q -ir 'osl-default' /run/cloud-init/; then
     sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-OSL -o /etc/nvidia/gridd.conf
     sudo mkdir -p /etc/nvidia/ClientConfigToken
