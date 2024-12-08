@@ -52,13 +52,15 @@ EOF
   "debian")
       cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
-  version: 1
-  config:
-  - type: physical
-    name: e*
-    subnets:
-      - type: dhcp
-      - type: dhcp6
+  version: 2
+  ethernets:
+  # opaque ID for physical interfaces, only referred to by other stanzas
+    local_if:
+      match:
+        name: e*
+      accept-ra: true
+      dhcp6: true
+      dhcp4: true
 EOF
     ;;
   "ubuntu")
