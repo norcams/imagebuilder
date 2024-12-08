@@ -23,3 +23,6 @@ sudo fstrim / || true
 # Clean up authorized_keys
 : > ~/.ssh/authorized_keys
 sudo bash -c ': > /root/.ssh/authorized_keys'
+
+# Remove logs and artifacts so cloud-init can re-run
+sudo cloud-init clean
