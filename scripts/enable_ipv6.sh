@@ -50,7 +50,21 @@ EOF
     esac
     ;;
   "debian")
-      cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+    case $major_version in
+      "11")
+        cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
+network:
+  version: 1
+  config:
+  - type: physical
+    name: enp1s0
+    subnets:
+      - type: dhcp
+      - type: dhcp6
+EOF
+        ;;
+      "12")
+	cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
 network:
   version: 2
   ethernets:
@@ -62,6 +76,8 @@ network:
       dhcp6: true
       dhcp4: true
 EOF
+	;;
+    esac
     ;;
   "ubuntu")
       cat <<-EOF | sudo tee /etc/cloud/cloud.cfg.d/custom-networking.cfg
