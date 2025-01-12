@@ -16,9 +16,9 @@ if [ "$os_id" != 'rhel' ]; then
     exit 0
 fi
 
-# Only RHEL 7, 8, 9
+# Only RHEL 8, 9
 case $os_ver in
-    7|8|9) ;;
+    8|9) ;;
     *)
 	echo "This is not a supported RHEL version: os_ver = '$os_ver'"
 	exit 0
@@ -64,10 +64,6 @@ sudo yum -y upgrade
 
 # Installing UiO yum repos and GPG key
 case $os_ver in
-    7)
-	sudo yum -y --nogpgcheck install http://rpm.uio.no/uio-el7-free/latest/x86_64/Packages/u/uio-release-7-2.noarch.rpm
-	sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-UIO
-	;;
     8)
 	sudo yum -y --nogpgcheck install http://rpm.uio.no/uio-el8-free/latest/x86_64/Packages/u/uio-release-8-1.el8.noarch.rpm
 	sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-uio-el8-free
@@ -80,10 +76,6 @@ esac
 
 # Installing EPEL yum repos and GPG key
 case $os_ver in
-    7)
-	sudo yum -y --nogpgcheck install http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
-	;;
     8)
 	sudo yum -y --nogpgcheck install http://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 	sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
