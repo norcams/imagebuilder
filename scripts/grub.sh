@@ -88,7 +88,7 @@ sudo sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT=.*)$/#\1/' $grub
 if grep -q -E '^GRUB_CMDLINE_LINUX=' $grub; then
     sudo sed -i -E "s%^GRUB_CMDLINE_LINUX=.*$%GRUB_CMDLINE_LINUX=\"console=ttyS0,115200n8 console=tty0 ${cmdline[*]}\"%" $grub
 else
-    cat <<EOF | sudo tee $grub
+    cat <<EOF | sudo tee -a $grub
 
 # added by NREC 
 GRUB_CMDLINE_LINUX="console=ttyS0,115200n8 console=tty0 ${cmdline[*]}"
@@ -99,7 +99,7 @@ fi
 if grep -q -E '^GRUB_TIMEOUT=' $grub; then
     sudo sed -i -E 's/^GRUB_TIMEOUT=.*$/GRUB_TIMEOUT=5/' $grub
 else
-    cat <<EOF | sudo tee $grub
+    cat <<EOF | sudo tee -a $grub
 
 # added by NREC 
 GRUB_TIMEOUT=5
@@ -110,7 +110,7 @@ fi
 if grep -q -E '^GRUB_TERMINAL=' $grub; then
     sudo sed -i -E 's/^GRUB_TERMINAL=.*$/GRUB_TERMINAL="serial console"/' $grub
 else
-    cat <<EOF | sudo tee $grub
+    cat <<EOF | sudo tee -a $grub
 
 # added by NREC 
 GRUB_TERMINAL="serial console"
@@ -121,7 +121,7 @@ fi
 if grep -q -E '^GRUB_SERIAL_COMMAND=' $grub; then
     sudo sed -i -E 's/^GRUB_SERIAL_COMMAND=.*$/GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"/' $grub
 else
-    cat <<EOF | sudo tee $grub
+    cat <<EOF | sudo tee -a $grub
 
 # added by NREC 
 GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"
@@ -132,7 +132,7 @@ fi
 if grep -q -E '^GRUB_TIMEOUT_STYLE=' $grub; then
     sudo sed -i -E 's/^GRUB_TIMEOUT_STYLE=.*$/GRUB_TIMEOUT_STYLE=menu/' $grub
 else
-    cat <<EOF | sudo tee $grub
+    cat <<EOF | sudo tee -a $grub
 
 # added by NREC 
 GRUB_TIMEOUT_STYLE=menu
@@ -144,7 +144,7 @@ if [ $platform == 'ubuntu' ]; then
     if grep -q -E '^GRUB_RECORDFAIL_TIMEOUT=' $grub; then
 	sudo sed -i -E 's/^GRUB_RECORDFAIL_TIMEOUT=.*$/GRUB_RECORDFAIL_TIMEOUT=0/' $grub
     else
-	cat <<EOF | sudo tee $grub
+	cat <<EOF | sudo tee -a $grub
 
 # added by NREC 
 GRUB_RECORDFAIL_TIMEOUT=0
