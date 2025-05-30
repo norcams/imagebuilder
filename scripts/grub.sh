@@ -82,13 +82,13 @@ done
 # Note: Some distros use GRUB_CMDLINE_LINUX_DEFAULT instead of
 # GRUB_CMDLINE_LINUX, and its unclear why. The former only applies to
 # the default grub selection, while the latter applies to all
-sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT=.*)$/#\1/' $grub
+sudo sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT=.*)$/#\1/' $grub
 
 # Set GRUB_CMDLINE_LINUX
 if grep -q -E '^GRUB_CMDLINE_LINUX=' $grub; then
-    sed -i -E "s%^GRUB_CMDLINE_LINUX=.*$%GRUB_CMDLINE_LINUX=\"console=ttyS0,115200n8 console=tty0 ${cmdline[*]}\"%" $grub
+    sudo sed -i -E "s%^GRUB_CMDLINE_LINUX=.*$%GRUB_CMDLINE_LINUX=\"console=ttyS0,115200n8 console=tty0 ${cmdline[*]}\"%" $grub
 else
-    cat <<EOF >>$grub
+    cat <<EOF >> sudo tee $grub
 
 # added by NREC 
 GRUB_CMDLINE_LINUX="console=ttyS0,115200n8 console=tty0 ${cmdline[*]}"
@@ -97,9 +97,9 @@ fi
 
 # Set GRUB_TIMEOUT
 if grep -q -E '^GRUB_TIMEOUT=' $grub; then
-    sed -i -E 's/^GRUB_TIMEOUT=.*$/GRUB_TIMEOUT=5/' $grub
+    sudo sed -i -E 's/^GRUB_TIMEOUT=.*$/GRUB_TIMEOUT=5/' $grub
 else
-    cat <<EOF >>$grub
+    cat <<EOF >> sudo tee $grub
 
 # added by NREC 
 GRUB_TIMEOUT=5
@@ -108,9 +108,9 @@ fi
 
 # Set GRUB_TERMINAL
 if grep -q -E '^GRUB_TERMINAL=' $grub; then
-    sed -i -E 's/^GRUB_TERMINAL=.*$/GRUB_TERMINAL="serial console"/' $grub
+    sudo sed -i -E 's/^GRUB_TERMINAL=.*$/GRUB_TERMINAL="serial console"/' $grub
 else
-    cat <<EOF >>$grub
+    cat <<EOF >> sudo tee $grub
 
 # added by NREC 
 GRUB_TERMINAL="serial console"
@@ -119,9 +119,9 @@ fi
 
 # Set GRUB_SERIAL_COMMAND
 if grep -q -E '^GRUB_SERIAL_COMMAND=' $grub; then
-    sed -i -E 's/^GRUB_SERIAL_COMMAND=.*$/GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"/' $grub
+    sudo sed -i -E 's/^GRUB_SERIAL_COMMAND=.*$/GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"/' $grub
 else
-    cat <<EOF >>$grub
+    cat <<EOF >> sudo tee $grub
 
 # added by NREC 
 GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"
@@ -130,9 +130,9 @@ fi
 
 # Set GRUB_TIMEOUT_STYLE
 if grep -q -E '^GRUB_TIMEOUT_STYLE=' $grub; then
-    sed -i -E 's/^GRUB_TIMEOUT_STYLE=.*$/GRUB_TIMEOUT_STYLE=menu/' $grub
+    sudo sed -i -E 's/^GRUB_TIMEOUT_STYLE=.*$/GRUB_TIMEOUT_STYLE=menu/' $grub
 else
-    cat <<EOF >>$grub
+    cat <<EOF >> sudo tee $grub
 
 # added by NREC 
 GRUB_TIMEOUT_STYLE=menu
@@ -142,9 +142,9 @@ fi
 # Set GRUB_RECORDFAIL_TIMEOUT (only ubuntu)
 if [ $platform == 'ubuntu' ]; then
     if grep -q -E '^GRUB_RECORDFAIL_TIMEOUT=' $grub; then
-	sed -i -E 's/^GRUB_RECORDFAIL_TIMEOUT=.*$/GRUB_RECORDFAIL_TIMEOUT=0/' $grub
+	sudo sed -i -E 's/^GRUB_RECORDFAIL_TIMEOUT=.*$/GRUB_RECORDFAIL_TIMEOUT=0/' $grub
     else
-	cat <<EOF >>$grub
+	cat <<EOF >> sudo tee $grub
 
 # added by NREC 
 GRUB_RECORDFAIL_TIMEOUT=0
@@ -154,20 +154,20 @@ fi
 
 # Remove timeout override (debian)
 if [ -f /etc/default/grub.d/15_timeout.cfg ]; then
-    rm -f /etc/default/grub.d/15_timeout.cfg
+    sudo rm -f /etc/default/grub.d/15_timeout.cfg
 fi
 
 # Remove cloudimg override (ubuntu)
 if [ -f /etc/default/grub.d/50-cloudimg-settings.cfg ]; then
-    rm -f /etc/default/grub.d/50-cloudimg-settings.cfg
+    sudo rm -f /etc/default/grub.d/50-cloudimg-settings.cfg
 fi
 
 # update grub.cfg
 case $platform in
     'fedora'|'el')
-	grub2-mkconfig -o /boot/grub2/grub.cfg
+	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 	;;
     'ubuntu'|'debian')
-	update-grub
+	sudo update-grub
 	;;
 esac
