@@ -57,7 +57,7 @@ network:
   version: 1
   config:
   - type: physical
-    name: enp1s0
+    name: enp3s0
     subnets:
       - type: dhcp
       - type: dhcp6
