@@ -82,20 +82,6 @@ major_version=`echo $platform_version | cut -d. -f1`
 url="https://report.nrec.no/downloads/${platform}/${major_version}/v1/report"
 
 case $platform in
-    "el")
-	case $major_version in
-	    "6")
-		download_cmd='curl -fsS -o /usr/local/sbin/report'
-		install_wrapper
-		install_anacron
-		;;
-	    "7"|"8"|"9"|"10")
-		download_cmd='curl -fsS -o /usr/local/sbin/report'
-		install_wrapper
-		install_systemd
-		;;
-	esac
-	;;
     "debian")
 	download_cmd='wget --quiet -O /usr/local/sbin/report'
 	install_wrapper

@@ -31,36 +31,14 @@ major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
     "fedora")
-	case $major_version in
-	    "40")
-		sudo dnf install dnf-automatic -y \
-		    && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf \
-		    && sudo systemctl enable dnf-automatic.timer
-		sudo dnf clean all
-		sudo rm -rf /tmp/*
-		;;
-	    *)
-		sudo dnf install dnf5-plugin-automatic -y \
-		    && sudo sh -c "echo -e '# NREC overrides\n[commands]\napply_updates = yes' > /etc/dnf/automatic.conf" \
-		    && sudo systemctl enable dnf5-automatic.timer
-		sudo dnf clean all
-		sudo rm -rf /tmp/*
-		;;
-	esac
+	sudo dnf install dnf5-plugin-automatic -y \
+	    && sudo sh -c "echo -e '# NREC overrides\n[commands]\napply_updates = yes' > /etc/dnf/automatic.conf" \
+	    && sudo systemctl enable dnf5-automatic.timer
+	sudo dnf clean all
+	sudo rm -rf /tmp/*
 	;;
     "el")
 	case $major_version in
-	    "6")
-		sudo yum install yum-cron -y \
-		    && sudo chkconfig yum-cron on
-		sudo yum clean all
-		;;
-	    "7")
-		sudo yum install yum-cron -y \
-		    && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/yum/yum-cron.conf \
-		    && sudo systemctl enable yum-cron.service
-		sudo yum clean all
-		;;
 	    "8"|"9"|"10")
 		sudo dnf install dnf-automatic -y \
 		    && sudo sed -i -e 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf \

@@ -36,30 +36,12 @@ fi
 major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
-    "fedora")
+    "fedora"|"el")
 	# The agent is installed by default
 	sudo systemctl enable qemu-guest-agent.service
 	sudo dnf clean all
 	;;
-    "el")
-	case $major_version in
-	    "6")
-            # We don't support RHEL 6 for this
-            ;;
-	    "7"|"8"|"9"|"10")
-		# The agent is installed by default
-		sudo systemctl enable qemu-guest-agent.service
-		sudo yum clean all
-		;;
-	esac
-	;;
-    "debian")
-	sudo apt-get update \
-	    && sudo DEBIAN_FRONTEND=noninteractive apt-get install qemu-guest-agent -y
-	# agent is vendor enabled on Debian
-	sudo apt-get clean
-	;;
-    "ubuntu")
+    "debian"|"ubuntu")
 	sudo apt-get update \
 	    && sudo DEBIAN_FRONTEND=noninteractive apt-get install qemu-guest-agent -y
 	# agent is vendor enabled on Debian

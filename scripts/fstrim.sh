@@ -31,26 +31,13 @@ fi
 major_version=`echo $platform_version | cut -d. -f1`
 
 case $platform in
-    "fedora")
+    "fedora"|"el")
 	sudo systemctl enable fstrim.timer
 	;;
     "debian")
-	if test "$major_version" -ge 8; then
-	    sudo cp /usr/share/doc/util-linux/examples/fstrim.service /etc/systemd/system
-	    sudo cp /usr/share/doc/util-linux/examples/fstrim.timer /etc/systemd/system
-	    sudo systemctl enable fstrim.timer
-	else
-	    printf '#!/bin/sh\nfstrim --all || true\n' | sudo tee /etc/cron.weekly/fstrim
-	    sudo chmod +x /etc/cron.weekly/fstrim
-	fi
+	sudo cp /usr/share/doc/util-linux/examples/fstrim.service /etc/systemd/system
+	sudo cp /usr/share/doc/util-linux/examples/fstrim.timer /etc/systemd/system
+	sudo systemctl enable fstrim.timer
 	;;
     # Ubuntu runs fstrim weekly (with anacron) in default install
-    "el")
-	if test "$major_version" -ge 7; then
-	    sudo systemctl enable fstrim.timer
-	else
-	    printf '#!/bin/sh\nfstrim --all || true\n' | sudo tee /etc/cron.weekly/fstrim
-	    sudo chmod +x /etc/cron.weekly/fstrim
-	fi
-	;;
 esac
