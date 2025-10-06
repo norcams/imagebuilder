@@ -31,7 +31,7 @@ random_hex=$(openssl rand -hex 8)
 # Get and install Satellite certificate
 sudo curl -k https://satellite.uio.no/pub/katello-ca-consumer-latest.noarch.rpm \
      -o /tmp/katello-ca-consumer-latest.noarch.rpm
-sudo dnf -y --nogpgcheck install /tmp/katello-ca-consumer-latest.noarch.rpm
+sudo dnf -y --nogpgcheck install /tmp/katello-ca-consumer-latest.noarch.rpm || :
 sudo rm -f /tmp/katello-ca-consumer-latest.noarch.rpm
 
 # Register host
@@ -72,10 +72,26 @@ sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 sudo katello-rhsm-consumer
 
 # Installing katello-agent
-sudo dnf -y install katello-agent
+case $os_ver in
+    8|9)
+	sudo dnf -y install katello-agent
+	;;
+esac
 
 # Upgrading packages
 sudo dnf -y upgrade
+
+# Unregister and remove redhat insights
+if rpm -q --quiet insights-client; then
+    insights-client --unregister
+    dnf remove -y insights-client
+fi
+
+# Delete rogue repo files created with image
+find /etc/yum.repos.d \
+     -regextype posix-extended \
+     -regex '^.*/[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\.repo$' \
+     -delete
 
 # Installing UiO dnf repos and GPG key
 case $os_ver in
