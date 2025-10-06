@@ -83,12 +83,12 @@ sudo dnf -y upgrade
 
 # Unregister and remove redhat insights
 if rpm -q --quiet insights-client; then
-    insights-client --unregister
-    dnf remove -y insights-client
+    sudo insights-client --unregister
+    sudo dnf remove -y insights-client
 fi
 
 # Delete rogue repo files created with image
-find /etc/yum.repos.d \
+sudo find /etc/yum.repos.d \
      -regextype posix-extended \
      -regex '^.*/[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}\.repo$' \
      -delete
