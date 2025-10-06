@@ -93,8 +93,8 @@ case $os_ver in
 	;;
     10)
 	sudo dnf -y --nogpgcheck install \
-	     http://rpm.uio.no/uio-el9-free/latest/x86_64/Packages/u/uio-release-10-1.el10.noarch.rpm \
-	     http://rpm.uio.no/uio-el9-free/latest/x86_64/Packages/u/uio-gpg-keys-0.6-1.el10.noarch.rpm
+	     http://rpm.uio.no/uio-el10-free/latest/x86_64/Packages/u/uio-release-10-1.el10.noarch.rpm \
+	     http://rpm.uio.no/uio-el10-free/latest/x86_64/Packages/u/uio-gpg-keys-0.6-1.el10.noarch.rpm
 	sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-uio-el10-free
 	;;
 esac
