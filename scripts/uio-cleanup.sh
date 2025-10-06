@@ -18,7 +18,7 @@ fi
 
 # Only RHEL 8, 9
 case $os_ver in
-    8|9) ;;
+    8|9|10) ;;
     *)
 	echo "This is not a supported RHEL version: os_ver = '$os_ver'"
 	exit 0
