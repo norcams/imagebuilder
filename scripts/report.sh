@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Get OS info
+test -f /etc/os-release && . /etc/os-release
+os_id=$ID
+os_ver=$(echo $VERSION_ID | cut -d. -f1)
+
+# Avoid RHEL
+if [ "$os_id" == 'rhel' ]; then
+    echo "report.sh not applicable for $os_id"
+    exit 0
+fi
+
 install_wrapper() {
     cat <<-EOF | sudo tee /usr/local/sbin/report_wrapper
 #!/bin/bash

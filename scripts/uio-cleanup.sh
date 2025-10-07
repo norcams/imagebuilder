@@ -26,7 +26,7 @@ case $os_ver in
 esac
 
 # Unregister and clean
-sudo yum clean all
+sudo dnf clean all
 sudo subscription-manager unregister
 sudo subscription-manager clean
 sudo sh -c 'rm -f /etc/pki/consumer/*'
@@ -38,4 +38,4 @@ sudo sh -c 'rm -f /var/cfengine/ppkeys/localhost.*'
 sudo sh -c 'rm -f /var/nivlheim/*'
 
 # Make NetworkManager update resolv.conf
-test -f /etc/NetworkManager/conf.d/99-cloud-init.conf && sudo rm -f /etc/NetworkManager/conf.d/99-cloud-init.conf
+sudo rm -f /etc/NetworkManager/conf.d/99-cloud-init.conf || :

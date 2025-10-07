@@ -78,14 +78,14 @@ case $os_ver in
 	;;
 esac
 
-# Upgrading packages
-sudo dnf -y upgrade
-
 # Unregister and remove redhat insights
 if rpm -q --quiet insights-client; then
     sudo insights-client --unregister
     sudo dnf remove -y insights-client
 fi
+
+# Upgrading packages
+sudo dnf -y upgrade --refresh
 
 # Delete rogue repo files created with image
 sudo find /etc/yum.repos.d \
