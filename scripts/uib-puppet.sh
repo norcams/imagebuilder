@@ -1,11 +1,20 @@
 #!/bin/bash
 
-# Install puppet repo, agent and theforman module
-sudo yum install -y redhat-lsb-core.x86_64
-sudo yum install -y https://yum.puppetlabs.com/puppet7-release-el-"$(lsb_release -sr|cut -d'.' -f1)".noarch.rpm
-sudo yum install -y puppet-agent
-sudo /opt/puppetlabs/bin/puppet module install theforeman/puppet
+# Source information about the operating system we are running on
+. /etc/os-release
 
+# Install different versions of puppet repo and agent based on Enterprise Linux version
+if [[ `echo $VERSION_ID | /bin/cut -d '.' -f1` -eq 8 ]]; then
+  sudo yum install -y redhat-lsb-core.x86_64
+  sudo yum install -y https://yum.puppetlabs.com/puppet7-release-el-"$(lsb_release -sr|cut -d'.' -f1)".noarch.rpm
+  sudo yum install -y puppet-agent
+elif [[ `echo $VERSION_ID | /bin/cut -d '.' -f1` -eq 10 ]]; then
+  sudo dnf install -y https://yum.voxpupuli.org/openvox7-release-el-"$(echo $VERSION_ID | cut -d'.' -f1)".noarch.rpm
+  sudo dnf install -y openvox-agent
+fi
+
+# Install theforman module
+sudo /opt/puppetlabs/bin/puppet module install theforeman/puppet
 
 # Create dir for UiB spesifics
 sudo mkdir /opt/uib
