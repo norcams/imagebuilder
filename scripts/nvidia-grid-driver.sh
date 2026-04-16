@@ -98,7 +98,7 @@ if sudo grep -q -ir 'bgo-default' /run/cloud-init/; then
 elif sudo grep -q -ir 'osl-default' /run/cloud-init/; then
     sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-OSL -o /etc/nvidia/gridd.conf
     sudo mkdir -p /etc/nvidia/ClientConfigToken
-    sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/client_configuration_token_01-30-2023-12-20-51.tok -s -o /etc/nvidia/ClientConfigToken/client_configuration_token_01-30-2023-12-20-51.tok
+    sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/osl-client-token-latest -s -o /etc/nvidia/ClientConfigToken/osl-client-token-latest
 else
     sudo curl -s https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/gridd.conf-default -o /etc/nvidia/gridd.conf
 fi
