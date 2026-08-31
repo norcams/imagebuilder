@@ -86,12 +86,7 @@ esac
 
 # Get latest NVIDIA GRID package and build with dkms for newest installed kernel
 cd /tmp
-if [[ $platform == 'ubuntu' ]] && [[ $major_version == 26 ]]; then
-  # vGPU 19.6
-  curl -o linux-grid-latest https://iaas-repo.uio.no/nrec/nrec-resources/files/nvidia-vgpu/NVIDIA-Linux-x86_64-580.178.04-grid.run
-else
-  curl -O https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/linux-grid-latest
-fi
+curl -O https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/linux-grid-latest
 chmod +x linux-grid-latest
 sudo ./linux-grid-latest --dkms --no-drm -n -s -k $KERNELVERSION
 
