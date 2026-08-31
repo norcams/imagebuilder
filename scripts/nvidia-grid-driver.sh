@@ -88,13 +88,12 @@ esac
 cd /tmp
 if [[ $platform == 'ubuntu' ]] && [[ $major_version == 26 ]]; then
   # vGPU 19.6
-  curl -o linux-grid-latest https://iaas-repo.uio.no/nrec/vgpu/nvidia/19.6/ubuntu26/Guest_Drivers/nvidia-linux-grid-580_580.178.04_amd64.deb
-  sudo dpkg -i linux-grid-latest
+  curl -o linux-grid-latest https://iaas-repo.uio.no/nrec/nrec-resources/files/nvidia-vgpu/NVIDIA-Linux-x86_64-580.178.04-grid.run
 else
   curl -O https://download.iaas.uio.no/nrec/nrec-resources/files/nvidia-vgpu/linux-grid-latest
-  chmod +x linux-grid-latest
-  sudo ./linux-grid-latest --dkms --no-drm -n -s -k $KERNELVERSION
 fi
+chmod +x linux-grid-latest
+sudo ./linux-grid-latest --dkms --no-drm -n -s -k $KERNELVERSION
 
 # Configure gridd.conf and licensing based on region
 if sudo grep -q -ir 'bgo-default' /run/cloud-init/; then
