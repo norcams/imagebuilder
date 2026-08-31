@@ -80,7 +80,7 @@ case $platform in
 	sudo DEBIAN_FRONTEND=noninteractive apt -y install dkms pciutils
 	KERNELINSTALLED=$(dpkg --list | grep linux-image | grep generic | sort -V -r | head -n 1 | cut -d' ' -f3)
 	KERNELVERSION=${KERNELINSTALLED##linux-image-}
-	sudo apt install -y linux-headers-$KERNELVERSION
+	sudo apt install -y gcc make linux-headers-$KERNELVERSION
 	;;
 esac
 
