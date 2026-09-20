@@ -54,6 +54,7 @@ class FakeImage:
     def __init__(self, log, fail=False):
         self.log = log
         self.fail = fail
+        self.download_kwargs = None
 
     def create_image(self, **kw):
         self.log.append(('image_created', kw))
@@ -63,6 +64,7 @@ class FakeImage:
 
     def download_image(self, image, output=None, **kw):
         self.log.append(('image_downloaded', image))
+        self.download_kwargs = kw
         if self.fail:
             raise RuntimeError('glance is unhappy')
         output.write(b'qcow2 data')

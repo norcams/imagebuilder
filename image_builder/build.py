@@ -114,6 +114,11 @@ class BuildFunctions:
         Straight through the API on the session we already hold. Shelling out
         to the glance CLI meant a second, independent authentication from the
         OS_* environment, and that CLI is deprecated upstream.
+
+        stream=True is load bearing. Without it openstacksdk asks requests for
+        the whole response body up front, so the entire image is held in
+        memory before a byte of it is written, and a large image takes the
+        process out via the OOM killer.
         """
         timestr = time.strftime("%Y%m%d")
         filename = f'{self.image_name}-{timestr}.qcow2'
@@ -121,7 +126,9 @@ class BuildFunctions:
         log.info("Downloading image to %s...", target)
         try:
             with open(target, 'wb') as image_file:
-                self.conn.image.download_image(artifact_id, output=image_file)
+                self.conn.image.download_image(artifact_id,
+                                               output=image_file,
+                                               stream=True)
         except Exception as error:
             log.error("Failed to download image %s: %s", artifact_id, error)
             if os.path.exists(target):

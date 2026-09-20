@@ -256,3 +256,13 @@ def test_packer_argv_supplies_every_declared_variable(build, monkeypatch, repo_r
             if line.startswith('variable "'):
                 declared.add(line.split('"')[1])
     assert supplied == declared
+
+
+def test_download_streams_rather_than_buffering_the_whole_image(build):
+    """Without stream=True openstacksdk reads the entire image into memory.
+
+    A 10 GiB image then needs more than 20 GiB of RAM and the process is
+    killed, which is exactly what happened on a builder node.
+    """
+    build.download_image('img-uuid')
+    assert build.conn.image.download_kwargs.get('stream') is True
