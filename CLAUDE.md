@@ -39,19 +39,18 @@ with a fake `BuildFunctions` — that is where the cleanup-on-failure guarantees
 Packaging metadata and the console script live in `pyproject.toml`; there is no `setup.py`.
 
 Running any command requires OpenStack credentials in the environment (`source keystone_rc.sh`) —
-`get_openstack_rc()` reads `OS_USERNAME`, `OS_PROJECT_NAME`, `OS_PASSWORD`, `OS_AUTH_URL`,
-`OS_IDENTITY_API_VERSION`, `OS_USER_DOMAIN_NAME`, `OS_PROJECT_DOMAIN_NAME`, `OS_REGION_NAME`,
-`OS_NO_CACHE` and exits if any are missing (`OS_CACERT` is optional). `packer`, `ssh-keygen`,
-`openssl`, and the `glance` CLI must be on `$PATH` — on RHEL/CentOS beware the unrelated
-`/usr/sbin/packer`; `/usr/bin/packer` is the right one.
+`REQUIRED_ENV` in `imagebuilder.py` lists exactly what is read, and a missing one is reported by
+name. `OS_CACERT` is optional. Deliberately *not* required: `OS_IDENTITY_API_VERSION` and
+`OS_NO_CACHE` were once mandatory but never used, which rejected valid openrc files. `packer` and
+`ssh-keygen` must be on `$PATH` — on RHEL/CentOS beware the unrelated `/usr/sbin/packer`;
+`/usr/bin/packer` is the right one.
 
 ## Architecture
 
-`image_builder/imagebuilder.py:main()` is a straight-line procedural driver — all orchestration lives
-there, and the other modules are stateless-ish helper classes. Two subcommands, dispatched by
-`parsecommands.Commands` (which uses the argparse "git-style subcommand" pattern: `sys.argv[1:2]`
-selects the method, `sys.argv[2:]` is parsed by that method's own parser, and `build_args` /
-`bootstrap_args` are `False` when unused).
+`image_builder/imagebuilder.py:main()` parses, configures logging, authenticates and dispatches to
+`run_build()` or `run_bootstrap()`, which return an exit code rather than calling `sys.exit` so they
+can be driven from a test. `parsecommands.Commands` uses argparse subparsers and exposes
+`build_args` / `bootstrap_args`, one of which is `None`.
 
 **`build`** (`build.py:BuildFunctions`) — the core flow, in order:
 1. `helpers.make_tmp_dir()` — a `tempfile.mkdtemp(prefix='imagebuilder-')` holding the SSH keypair and
@@ -91,8 +90,9 @@ resource a build elsewhere is using), and never images, whose names are indistin
 legitimate ones.
 
 **`bootstrap`** (`bootstrap.py:BootstrapFunctions`) — downloads a cloud image from a URL, optionally
-verifies it against a checksum file (substring match of the computed hexdigest in the fetched file), and
-uploads it to Glance with hardware properties set from the flags (`hw_disk_bus=scsi` +
+verifies it against a checksum file (`find_expected_checksum()` parses both the coreutils and BSD
+layouts and matches on the filename, falling back to "the hash appears anywhere" with a warning when
+no line names the download), and uploads it to Glance with hardware properties set from the flags (`hw_disk_bus=scsi` +
 `hw_scsi_model=virtio-scsi` unless `-s`, `hw_firmware_type=uefi` + `hw_machine_type=q35` with `-e`,
 always `hw_rng_model=virtio`). On success it writes the bare image id to **stdout** and nothing else —
 all other output goes to `logging` — so `bootstrap ... | xargs -I % imagebuilder build -s % ...` works.
