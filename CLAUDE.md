@@ -84,7 +84,11 @@ Everything after the first OpenStack resource is created runs under a `try/final
 reached on exceptions and on Ctrl-C (SIGINT becomes `KeyboardInterrupt`, which unwinds). `cleanup()` is
 written for that position: it skips ids that are `None` and swallows API errors, because raising there
 would mask the original failure. SIGTERM and SIGKILL still bypass it — verified — so those remain the
-one case that orphans `imagebuilder-*` resources.
+one case that orphans `imagebuilder-*` resources. `sweep_orphans()` runs at the start of every
+build to clear those up: only names matching `imagebuilder-<32 hex>`, only once older than
+`SWEEP_MAX_AGE_HOURS` (builder nodes share a project, so the age is what stops it deleting a
+resource a build elsewhere is using), and never images, whose names are indistinguishable from
+legitimate ones.
 
 **`bootstrap`** (`bootstrap.py:BootstrapFunctions`) — downloads a cloud image from a URL, optionally
 verifies it against a checksum file (substring match of the computed hexdigest in the fetched file), and

@@ -2,7 +2,9 @@
   * Isn't very good at the moment
   * Handle SIGTERM (clean up before dying). Exceptions and Ctrl-C already
     unwind through the try/finally in main(), but a SIGTERM kills the process
-    without running it, so those builds still leak a security group and keypair
+    without running it, so those builds still leak a security group and
+    keypair. sweep_orphans() clears them up on a later run, but only once they
+    are a day old
 
 * Post-process images
   * Convert image from raw to qcow2 after download 

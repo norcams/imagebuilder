@@ -22,6 +22,7 @@ class FakeNetwork:
     def __init__(self, log):
         self.log = log
         self.networks_result = []
+        self.groups = []
 
     def create_security_group(self, **kw):
         self.log.append(('sg_created', kw))
@@ -37,10 +38,14 @@ class FakeNetwork:
         self.log.append(('networks_listed', kw))
         return iter(self.networks_result)
 
+    def security_groups(self, **kw):
+        return iter(self.groups)
+
 
 class FakeCompute:
     def __init__(self, log):
         self.log = log
+        self.pairs = []
 
     def create_keypair(self, **kw):
         self.log.append(('kp_created', kw))
@@ -48,6 +53,15 @@ class FakeCompute:
 
     def delete_keypair(self, keypair):
         self.log.append(('kp_deleted', keypair))
+
+    def keypairs(self, **kw):
+        return iter(self.pairs)
+
+    def get_keypair(self, name):
+        for pair in self.pairs:
+            if pair.name == name:
+                return pair
+        raise RuntimeError(f'no such keypair: {name}')
 
 
 class FakeImage:

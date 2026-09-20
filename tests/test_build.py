@@ -1,4 +1,5 @@
 """The build path: resource lifecycle, manifest handling, image download."""
+import datetime
 import io
 import json
 import os
@@ -266,3 +267,114 @@ def test_download_streams_rather_than_buffering_the_whole_image(build):
     """
     build.download_image('img-uuid')
     assert build.conn.image.download_kwargs.get('stream') is True
+
+
+# --------------------------------------------------------------- sweeping
+#
+# Resources left behind by a run that was killed outright. The name shape and
+# the age are the only things standing between this and deleting something a
+# build on another node is using.
+
+def stamp(hours_ago):
+    when = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours_ago)
+    return when.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def fake_group(name, hours_ago):
+    return type('SG', (), {'id': 'id-' + name, 'name': name,
+                           'created_at': stamp(hours_ago)})()
+
+
+def fake_keypair(name, hours_ago):
+    created = stamp(hours_ago) if hours_ago is not None else None
+    return type('KP', (), {'name': name, 'created_at': created})()
+
+
+@pytest.mark.parametrize('name,swept', [
+    pytest.param('imagebuilder-' + 'a' * 32, True, id='ours'),
+    pytest.param('imagebuilder-' + 'A' * 32, False, id='uppercase-not-uuid'),
+    pytest.param('imagebuilder-short', False, id='wrong-shape'),
+    pytest.param('imagebuilder-' + 'a' * 33, False, id='too-long'),
+    pytest.param('default', False, id='someone-elses'),
+    pytest.param('my-imagebuilder-' + 'a' * 32, False, id='suffix-match'),
+    pytest.param('web-servers', False, id='unrelated'),
+])
+def test_only_our_own_resource_names_are_swept(build, name, swept):
+    build.conn.network.groups = [fake_group(name, hours_ago=48)]
+    build.sweep_orphans()
+    deleted = [e for e in build.conn.log if e[0] == 'sg_deleted']
+    assert bool(deleted) is swept
+
+
+@pytest.mark.parametrize('hours,swept', [
+    pytest.param(48, True, id='two-days-old'),
+    pytest.param(25, True, id='just-over'),
+    pytest.param(23, False, id='just-under'),
+    pytest.param(0, False, id='brand-new'),
+])
+def test_only_resources_older_than_the_threshold_are_swept(build, hours, swept):
+    """A build on another node shares this project and may be using it."""
+    build.conn.network.groups = [fake_group('imagebuilder-' + 'b' * 32, hours)]
+    build.sweep_orphans()
+    deleted = [e for e in build.conn.log if e[0] == 'sg_deleted']
+    assert bool(deleted) is swept
+
+
+def test_a_resource_with_no_usable_timestamp_is_left_alone(build):
+    group = fake_group('imagebuilder-' + 'c' * 32, 48)
+    group.created_at = None
+    build.conn.network.groups = [group]
+    assert build.sweep_orphans() == 0
+
+
+def test_keypairs_are_swept_too(build):
+    build.conn.compute.pairs = [fake_keypair('imagebuilder-' + 'd' * 32, 48)]
+    assert build.sweep_orphans() == 1
+    assert ('kp_deleted', 'imagebuilder-' + 'd' * 32) in build.conn.log
+
+
+def test_a_keypair_whose_age_is_unknown_is_left_alone(build):
+    """Nova does not always report created_at when listing keypairs."""
+    build.conn.compute.pairs = [fake_keypair('imagebuilder-' + 'e' * 32, None)]
+    assert build.sweep_orphans() == 0
+
+
+def test_images_are_never_swept(build):
+    """A leftover image is named like a good one, so it cannot be told apart."""
+    build.conn.network.groups = [fake_group('imagebuilder-' + 'f' * 32, 48)]
+    build.sweep_orphans()
+    assert 'image_deleted' not in build.conn.kinds()
+
+
+def test_a_listing_failure_does_not_stop_the_build(build):
+    def explode(**kw):
+        raise RuntimeError('neutron is down')
+
+    build.conn.network.security_groups = explode
+    assert build.sweep_orphans() == 0        # must not raise
+
+
+def test_a_delete_failure_does_not_stop_the_build(build):
+    def explode(sgid):
+        raise RuntimeError('in use')
+
+    build.conn.network.groups = [fake_group('imagebuilder-' + 'a' * 32, 48)]
+    build.conn.network.delete_security_group = explode
+    assert build.sweep_orphans() == 0        # must not raise
+
+
+@pytest.mark.parametrize('value', [
+    '2026-09-20T16:43:06Z',
+    '2026-09-20T16:43:06.123456Z',
+    '2026-09-20T16:43:06+00:00',
+    '2026-09-20T16:43:06.000000',
+])
+def test_timestamp_formats_openstack_actually_returns(build, value):
+    from image_builder.build import BuildFunctions
+    assert BuildFunctions.resource_age_hours(value) is not None
+
+
+@pytest.mark.parametrize('value', [None, '', 'not a date', 12345])
+def test_unreadable_timestamps_give_no_age(build, value):
+    from image_builder.build import BuildFunctions
+    assert BuildFunctions.resource_age_hours(value) is None

@@ -47,6 +47,11 @@ class Commands:
                            help='Be verbose (default is no output)',
                            action='store_true',
                            default=False)
+        build.add_argument('--no-sweep',
+                           help='Do not remove temporary security groups and '
+                                'keypairs left behind by runs that were killed',
+                           action='store_true',
+                           default=False)
         build.add_argument('-x', '--purge-source',
                            help='Purge source image you are building from',
                            action='store_true',

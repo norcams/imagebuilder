@@ -1,6 +1,8 @@
+import datetime
 import json
 import logging
 import os
+import re
 import subprocess
 import time
 import uuid
@@ -10,6 +12,15 @@ from openstack.connection import Connection
 from . import helpers
 
 log = logging.getLogger(__name__)
+
+# The temporary security group and keypair are named imagebuilder-<uuid4 hex>.
+# Only names of exactly this shape are ever removed by the sweep
+TEMP_NAME = re.compile(r'^imagebuilder-[0-9a-f]{32}$')
+
+# Nothing younger than this is swept. Builder nodes share one project, so the
+# age is what stops a sweep here from deleting resources out from under a
+# build running somewhere else
+SWEEP_MAX_AGE_HOURS = 24
 
 class BuildFunctions:
     def __init__(self,
@@ -58,6 +69,108 @@ class BuildFunctions:
                 self.conn.compute.delete_keypair(keypair_id)
             except Exception as error:
                 log.warning("Failed to remove keypair %s: %s", keypair_id, error)
+
+    @staticmethod
+    def resource_age_hours(created_at):
+        """Hours since an OpenStack timestamp, or None if it cannot be read
+
+        Neutron and nova do not agree on the format, and python 3.9 cannot
+        parse a trailing Z, so this is more forgiving than fromisoformat.
+        """
+        if not created_at:
+            return None
+        text = str(created_at).strip()
+        if text.endswith('Z'):
+            text = text[:-1] + '+00:00'
+        try:
+            stamp = datetime.datetime.fromisoformat(text)
+        except (TypeError, ValueError):
+            return None
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.timezone.utc)
+        return (now - stamp).total_seconds() / 3600
+
+    def sweep_orphans(self, max_age_hours=SWEEP_MAX_AGE_HOURS):
+        """Removes temporary resources left behind by runs that were killed
+
+        A build that dies outright, from the OOM killer or a SIGKILL, cannot
+        run its own cleanup, so its security group and keypair stay in the
+        project forever. Only names shaped exactly like imagebuilder-<uuid>
+        are considered, and only once they are older than max_age_hours.
+
+        Images are deliberately not swept. They are named after the image
+        being built, so a leftover cannot be told apart from a good one, and
+        deleting the wrong one would destroy a published image. The download
+        directory is left alone too: something else tidies that.
+        """
+        removed = self._sweep_security_groups(max_age_hours)
+        removed += self._sweep_keypairs(max_age_hours)
+        if removed:
+            log.warning("Removed %d orphaned resource(s) from earlier runs", removed)
+        return removed
+
+    def _sweep_security_groups(self, max_age_hours):
+        try:
+            groups = list(self.conn.network.security_groups())
+        except Exception as error:
+            log.warning("Could not list security groups to sweep: %s", error)
+            return 0
+        removed = 0
+        for group in groups:
+            if not TEMP_NAME.match(group.name or ''):
+                continue
+            age = self.resource_age_hours(group.created_at)
+            if age is None:
+                log.info("Leaving security group %s alone: no usable timestamp",
+                         group.name)
+                continue
+            if age < max_age_hours:
+                continue
+            log.warning("Removing orphaned security group %s, %.0f hours old",
+                        group.name, age)
+            try:
+                self.conn.network.delete_security_group(group.id)
+                removed += 1
+            except Exception as error:
+                log.warning("Could not remove security group %s: %s",
+                            group.name, error)
+        return removed
+
+    def _sweep_keypairs(self, max_age_hours):
+        try:
+            keypairs = list(self.conn.compute.keypairs())
+        except Exception as error:
+            log.warning("Could not list keypairs to sweep: %s", error)
+            return 0
+        removed = 0
+        for keypair in keypairs:
+            if not TEMP_NAME.match(keypair.name or ''):
+                continue
+            created = keypair.created_at
+            if not created:
+                # Nova does not always report created_at when listing, so ask
+                # for the one keypair rather than guess at its age
+                try:
+                    created = self.conn.compute.get_keypair(keypair.name).created_at
+                except Exception as error:
+                    log.info("Could not read the age of keypair %s: %s",
+                             keypair.name, error)
+            age = self.resource_age_hours(created)
+            if age is None:
+                log.info("Leaving keypair %s alone: no usable timestamp",
+                         keypair.name)
+                continue
+            if age < max_age_hours:
+                continue
+            log.warning("Removing orphaned keypair %s, %.0f hours old",
+                        keypair.name, age)
+            try:
+                self.conn.compute.delete_keypair(keypair.name)
+                removed += 1
+            except Exception as error:
+                log.warning("Could not remove keypair %s: %s", keypair.name, error)
+        return removed
 
     def create_keypairs(self):
         """Creates a temporary keypair"""

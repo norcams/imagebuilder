@@ -124,6 +124,11 @@ def run_build(args, ib_session, region, template_dir, download_dir):
         helpers.clean_tmp_files(build.tmp_dir)
         return 1
 
+    # Before creating anything, clear out what earlier runs could not. A build
+    # killed by the OOM killer never reaches its own cleanup
+    if not args.no_sweep:
+        build.sweep_orphans()
+
     log.info('Creating Packer security group...')
     secgroup_name, secgroup_id = build.create_security_group()
 

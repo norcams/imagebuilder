@@ -35,6 +35,10 @@ def run_build(clean_env, monkeypatch):
             def run_packer_init(self, template):
                 return 0
 
+            def sweep_orphans(self, *a, **k):
+                calls.append('swept')
+                return 0
+
             def create_security_group(self):
                 calls.append('sg_created')
                 return 'sg-name', 'sg-1'
@@ -208,3 +212,18 @@ def test_bootstrap_upload_failure_exits_one_and_cleans_up(run_bootstrap):
     assert code == 1
     assert captured.out == ''
     assert not os.path.exists(fake.tmp_dir)
+
+
+def test_orphans_are_swept_before_anything_new_is_created(run_build):
+    """A run killed by the OOM killer leaves its security group and keypair."""
+    code, raised, calls = run_build()
+    assert 'swept' in calls
+    assert calls.index('swept') < calls.index('sg_created')
+
+
+def test_no_sweep_skips_it(run_build):
+    code, raised, calls = run_build(argv=[
+        'imagebuilder', 'build', '-n', 'img', '-a', 'bgo-default-1',
+        '-s', 'src', '-u', 'almalinux', '--no-sweep'])
+    assert 'swept' not in calls
+    assert code == 0
