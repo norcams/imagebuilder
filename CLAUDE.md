@@ -14,11 +14,13 @@ This fork's `origin` is `trondham/imagebuilder`; `upstream` is `norcams/imagebui
 ## Commands
 
 ```bash
-# Lint — this is what CI runs (.github/workflows/python-package.yml), matrix py3.9/3.10/3.11
-ruff check --select=E9,F63,F7,F82 --target-version=py39 .
-ruff check --target-version=py39 .
+# Lint — this is what CI runs (.github/workflows/python-package.yml), matrix py3.9/3.10/3.11.
+# The rule set and target-version live in pyproject.toml, so ruff needs no flags
+ruff check --select=E9,F63,F7,F82 .
+ruff check .
+shellcheck build-images.sh        # its own CI job; scripts/ is not linted yet
 
-# Tests — CI runs these too; ruff is pinned to 0.15.22 and pytest to 8.4.2
+# Tests — CI runs these too; pytest is pinned to 8.4.2 because 9 requires 3.10
 pytest -q
 pytest tests/test_main_flow.py -q          # a single file
 pytest -k "cleanup" -q                     # a single case
@@ -83,9 +85,11 @@ Everything after the first OpenStack resource is created runs under a `try/final
 reached on exceptions and on Ctrl-C (SIGINT becomes `KeyboardInterrupt`, which unwinds). `cleanup()` is
 written for that position: it skips ids that are `None` and swallows API errors, because raising there
 would mask the original failure. SIGTERM and SIGKILL still bypass it — verified — so those remain the
-one case that orphans `imagebuilder-*` resources. `sweep_orphans()` runs at the start of every
-build to clear those up: only names matching `imagebuilder-<32 hex>`, only once older than
-`SWEEP_MAX_AGE_HOURS` (builder nodes share a project, so the age is what stops it deleting a
+one case that orphans `imagebuilder-*` resources. `sweep_orphans()` clears those up, but only when asked
+— `--sweep`, or `IB_SWEEP=true` in the environment, which is how `build-images.sh -s` reaches it,
+since the generated build scripts take no arguments of their own. It is opt-in because it deletes
+resources the current run did not create. Only names matching `imagebuilder-<32 hex>`, only once
+older than `SWEEP_MAX_AGE_HOURS` (builder nodes share a project, so the age is what stops it deleting a
 resource a build elsewhere is using), and never images, whose names are indistinguishable from
 legitimate ones.
 

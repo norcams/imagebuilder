@@ -136,6 +136,7 @@ declare -A SELECT_ALL=()
 LIST=0
 DRYRUN=0
 TIMEOUT=0
+SWEEP=0
 
 # Every -i given, kept so they can be checked before anything is built
 requested_images=()
@@ -184,6 +185,9 @@ usage() {
     echo '  -G  Build all vgpu images. Negates -i options'
     echo '  -W  Build all Windows images. Negates -i options'
     echo '  -i  Specify image to build. Can be used multiple times'
+    echo '  -s  Sweep: before each build, remove temporary security groups and'
+    echo '      keypairs left behind by runs that were killed. Note the lower case:'
+    echo '      -S selects the standard images, -s asks for the sweep'
     echo '  -t  Terminate build job if still running after this duration. See timeout(1)'
     echo '  -l  List all images and exit'
     echo '  -n  Dry-run: Only show what would be done'
@@ -260,7 +264,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-while getopts "SBGWlnhi:t:" arg; do
+while getopts "SBGWlnshi:t:" arg; do
     case $arg in
 	S|B|G|W)
 	    SELECT_ALL[${OPTION_CATEGORY[$arg]}]=1
@@ -277,6 +281,9 @@ while getopts "SBGWlnhi:t:" arg; do
 		exit 1
 	    fi
 	    TIMEOUT=$OPTARG
+	    ;;
+	s)
+	    SWEEP=1
 	    ;;
 	l)
 	    LIST=1
@@ -359,6 +366,15 @@ if ! flock -n 9; then
 fi
 
 export IMAGEBUILDER_REPORT=true
+
+# The generated build scripts take no arguments of their own, so a sweep is
+# asked for through the environment. Exported either way, so that a stray
+# IB_SWEEP in whoever's environment cannot turn it on behind our back
+if [ $SWEEP -eq 1 ]; then
+    export IB_SWEEP=true
+else
+    export IB_SWEEP=false
+fi
 
 run_start=$SECONDS
 

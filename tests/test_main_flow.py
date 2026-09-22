@@ -214,16 +214,43 @@ def test_bootstrap_upload_failure_exits_one_and_cleans_up(run_bootstrap):
     assert not os.path.exists(fake.tmp_dir)
 
 
-def test_orphans_are_swept_before_anything_new_is_created(run_build):
-    """A run killed by the OOM killer leaves its security group and keypair."""
+BUILD_ARGV = ['imagebuilder', 'build', '-n', 'img', '-a', 'bgo-default-1',
+              '-s', 'src', '-u', 'almalinux']
+
+
+def test_no_sweep_unless_it_is_asked_for(run_build):
+    """It deletes resources this run did not create, so it is opt-in."""
     code, raised, calls = run_build()
+    assert 'swept' not in calls
+    assert code == 0
+
+
+def test_sweep_happens_before_anything_new_is_created(run_build):
+    code, raised, calls = run_build(argv=BUILD_ARGV + ['--sweep'])
     assert 'swept' in calls
     assert calls.index('swept') < calls.index('sg_created')
 
 
-def test_no_sweep_skips_it(run_build):
-    code, raised, calls = run_build(argv=[
-        'imagebuilder', 'build', '-n', 'img', '-a', 'bgo-default-1',
-        '-s', 'src', '-u', 'almalinux', '--no-sweep'])
-    assert 'swept' not in calls
-    assert code == 0
+def test_ib_sweep_in_the_environment_asks_for_one_too(run_build, monkeypatch):
+    """build-images.sh runs build scripts that take no arguments of their own."""
+    monkeypatch.setenv('IB_SWEEP', 'true')
+    code, raised, calls = run_build()
+    assert 'swept' in calls
+
+
+@pytest.mark.parametrize('value,swept', [
+    pytest.param('true', True, id='true'),
+    pytest.param('TRUE', True, id='uppercase'),
+    pytest.param('1', True, id='one'),
+    pytest.param('yes', True, id='yes'),
+    pytest.param('on', True, id='on'),
+    pytest.param('false', False, id='false'),
+    pytest.param('0', False, id='zero'),
+    pytest.param('no', False, id='no'),
+    pytest.param('', False, id='empty'),
+])
+def test_ib_sweep_values(run_build, monkeypatch, value, swept):
+    """IB_SWEEP=false must not turn it on."""
+    monkeypatch.setenv('IB_SWEEP', value)
+    code, raised, calls = run_build()
+    assert ('swept' in calls) is swept

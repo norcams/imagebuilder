@@ -69,6 +69,15 @@ def configure_logging(args):
         logging.basicConfig(format="%(message)s", level=logging.WARNING)
 
 
+def sweep_requested_by_environment():
+    """Whether IB_SWEEP asks for a sweep
+
+    build-images.sh runs the generated build scripts, which take no arguments
+    of their own, so the environment is how a sweep is asked for from there.
+    """
+    return os.environ.get('IB_SWEEP', '').strip().lower() in ('1', 'true', 'yes', 'on')
+
+
 def resolve_directory(config, env_var, option):
     """Finds a configured directory, with the environment variable winning"""
     if env_var in os.environ:
@@ -124,9 +133,9 @@ def run_build(args, ib_session, region, template_dir, download_dir):
         helpers.clean_tmp_files(build.tmp_dir)
         return 1
 
-    # Before creating anything, clear out what earlier runs could not. A build
-    # killed by the OOM killer never reaches its own cleanup
-    if not args.no_sweep:
+    # Asked for rather than assumed: a sweep deletes resources this run did not
+    # create, so it happens when something wants it to, not on every build
+    if args.sweep or sweep_requested_by_environment():
         build.sweep_orphans()
 
     log.info('Creating Packer security group...')

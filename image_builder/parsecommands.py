@@ -47,9 +47,11 @@ class Commands:
                            help='Be verbose (default is no output)',
                            action='store_true',
                            default=False)
-        build.add_argument('--no-sweep',
-                           help='Do not remove temporary security groups and '
-                                'keypairs left behind by runs that were killed',
+        build.add_argument('--sweep',
+                           help='Before building, remove temporary security '
+                                'groups and keypairs left behind by runs that '
+                                'were killed. Can also be asked for with '
+                                'IB_SWEEP=true in the environment',
                            action='store_true',
                            default=False)
         build.add_argument('-x', '--purge-source',
