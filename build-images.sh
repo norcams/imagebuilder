@@ -4,8 +4,10 @@
 # per image.
 #
 # The colour palette and the XY/line/cnt helpers below are kept whole for
-# future use, so unused variables and uncalled functions are expected here
-# shellcheck disable=SC2034,SC2329
+# future use, so unused variables and uncalled functions are expected here.
+# SC2317 and SC2329 are the same complaint: shellcheck renamed it, and both
+# codes are listed so this stays quiet on either version
+# shellcheck disable=SC2034,SC2317,SC2329
 
 # Continue past a failed build, but treat unset variables and broken pipes as
 # errors. Not -e: one image failing must not stop the rest of the run

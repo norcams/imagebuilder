@@ -1,4 +1,5 @@
-# This workflow will install Python dependencies, lint and run tests with a variety of Python versions
+# This workflow will install Python dependencies, lint and run tests with a
+# variety of Python versions, and lint the shell scripts
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Python package
@@ -48,3 +49,19 @@ jobs:
           ruff check --output-format=github .
       - name: Run tests
         run: pytest -q
+
+  shellcheck:
+    # Its own job rather than a step in the matrix: the shell scripts have
+    # nothing to do with the Python version, so there is no point linting them
+    # three times
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Lint shell scripts
+        run: |
+          shellcheck --version
+          # Only build-images.sh for now. The provisioning scripts under
+          # scripts/ run on the guest rather than here and currently produce
+          # around a hundred findings, so adding them needs a cleanup first
+          shellcheck build-images.sh
