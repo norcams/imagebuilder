@@ -236,6 +236,14 @@ fi
 for script_path in "$BUILD_PATH"/*; do
     [ -f "$script_path" ] || continue
     script=${script_path##*/}
+    # A windows image installs two scripts: winsrv_<version>_wrapper, which is
+    # the entry point, and winsrv_<version>, which the wrapper calls. The
+    # second is not an image of its own, and running it directly starts a
+    # build on the windows build host outside its schedule, so it is not
+    # something anything here should ever pick up
+    if [[ $script =~ ^winsrv_ ]] && [[ ! $script =~ _wrapper$ ]]; then
+        continue
+    fi
     IMAGE_CATEGORY[$script]=$(categorise "$script")
     ALL_IMAGES+=("$script")
 done
@@ -305,7 +313,7 @@ fi
 # image nobody has
 unknown_images=()
 for image in "${requested_images[@]}"; do
-    if [ ! -f "${BUILD_PATH}/${image}" ]; then
+    if [ -z "${IMAGE_CATEGORY[$image]:-}" ]; then
 	unknown_images+=("$image")
     fi
 done
