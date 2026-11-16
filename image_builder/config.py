@@ -1,7 +1,8 @@
-import os
 import configparser
+import os
 
-class Config(object):
+
+class Config:
     def __init__(self, configfile_path=None):
         if configfile_path is None:
             self.configfile_path = [os.curdir,
@@ -14,11 +15,7 @@ class Config(object):
             self.config_file_list.append(os.path.join(path, "config"))
         self.config = self.__read_config()
 
-    def show_config(self):
-        # Not implemented yet
-        pass
-
     def __read_config(self):
         config = configparser.ConfigParser()
-        config.read(self.config_file_list)
+        config.read(self.config_file_list, encoding='utf-8')
         return config

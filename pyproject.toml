@@ -1,4 +1,63 @@
-[tool.ruff]
-# Never enforce `E501` (line length violations).
-lint.ignore = ["E501", "E722"]
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "imagebuilder"
+description = "CLI for Packer-driven image building in UH IaaS"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Anders Vaage", email = "anders@uib.no" }]
+dynamic = ["version"]
+# The two libraries actually imported. Exact pins live in requirements.txt,
+# which is where the Python 3.9 ceiling is worked out
+dependencies = [
+    "keystoneauth1",
+    "openstacksdk",
+]
+
+[project.urls]
+Homepage = "https://github.com/norcams/imagebuilder"
+
+[project.scripts]
+imagebuilder = "image_builder.imagebuilder:main"
+
+[tool.setuptools]
+packages = ["image_builder"]
+
+[tool.setuptools.dynamic]
+version = { attr = "image_builder.__version__" }
+
+[tool.ruff]
+target-version = "py39"
+
+# Selected explicitly so the rule set is this repository's decision rather than
+# whatever ruff currently defaults to. Relying on the default is what broke CI
+# when 0.16.0 widened it.
+lint.select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # import sorting
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "SIM",  # simplify
+    "RET",  # return consistency
+    "C4",   # comprehensions
+    "PIE",  # misc lints
+    "LOG",  # logging misuse
+    "S",    # bandit
+]
+
+# Never enforce `E501` (line length violations).
+lint.ignore = [
+    "E501",
+    "S310",  # urlopen: the URLs come from the operator running the command
+    "S603",  # subprocess without shell: the argv is built here, not user input
+    "S607",  # packer and ssh-keygen are deliberately resolved through PATH,
+             # so a virtualenv or a chosen packer build can be picked up
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]   # asserts are the point of a test

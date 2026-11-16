@@ -19,10 +19,15 @@ Pull requests are welcome!
 ### Requirements
 * Python 3
 * [keystoneauth](https://github.com/openstack/keystoneauth)
-* [python-novaclient](https://github.com/openstack/python-novaclient)
-* [python-glanceclient](https://github.com/openstack/python-glanceclient)
-* [Packer](https://packer.io)
+* [openstacksdk](https://github.com/openstack/openstacksdk)
+* [Packer](https://packer.io) 1.7 or newer
 * OpenSSL command line tool
+
+Packer no longer ships with the OpenStack builder built in, so imagebuilder runs
+`packer init` before every build to install the
+[openstack plugin](https://github.com/hashicorp/packer-plugin-openstack). This
+needs network access the first time; afterwards the plugin is cached under
+`$HOME/.config/packer/plugins`.
 
 
 ### Installation
@@ -50,8 +55,11 @@ image of choice (i.e. centos, ubuntu), -p is the path to your provision script
 and -d downloads the image after it's been built. 
 
 imagebuilder creates a temporary security group and keypair named
-"imagebuilder-<UUID>" which will be deleted after completion. Note that you for
-now will have to delete these manually if the command is not allowed to finish. 
+"imagebuilder-<UUID>" which will be deleted after completion. These are also
+removed if the build fails or you interrupt it with Ctrl-C. A process killed
+outright (SIGTERM, SIGKILL) cannot run its cleanup, so in that case you will
+still have to delete the leftover "imagebuilder-*" security group and keypair
+yourself.
 
 Run `imagebuilder <command> -h` for a complete list of options. 
 
@@ -90,6 +98,12 @@ Your config file could like this:
 template_dir = /home/user/.imagebuilder
 download_dir = /tmp/images
 ```
+
+`template_dir` must contain `template.pkr.hcl` along with the `scripts/`
+directory it refers to. A legacy JSON template named `template` is still picked
+up if no `template.pkr.hcl` is present, but Packer cannot install plugins for it
+— run `packer plugins install github.com/hashicorp/openstack` yourself, or
+migrate the template with `packer hcl2_upgrade template`.
 
 ### Provision scripts
 A provision script is (when using imagebuilder) simply a shell script that will

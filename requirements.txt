@@ -1,6 +1,19 @@
-keystoneauth1==4.3.1
-python-novaclient==17.4.0
-python-glanceclient==3.3.0
-python-neutronclient==7.3.0
-cryptography==46.0.7
-pbr==5.11.1
+# Pinned for Python 3.9, the stock interpreter on EL9. Two packages are capped
+# by that floor: keystoneauth1 5.12 requires 3.10 and 5.15 requires 3.11,
+# openstacksdk 4.6 requires 3.10 and 4.14 requires 3.11.
+#
+# This is the combination OpenStack itself sanctions for 3.9: the 2025.2
+# upper-constraints pin openstacksdk 4.5.0 for python_version=='3.9', and
+# everything here meets or exceeds the 2025.1 constraints.
+keystoneauth1==5.11.1
+openstacksdk==4.5.0
+cryptography==50.0.1
+pbr==7.0.3
+
+# On Python 3.11 or newer, comment out the two capped pins above and uncomment
+# these. cryptography and pbr are already current and stay as they are. See
+# DEVELOPMENT.md for installing a newer interpreter on EL9 without waiting for
+# EL10.
+#
+# keystoneauth1==5.17.0
+# openstacksdk==4.20.0

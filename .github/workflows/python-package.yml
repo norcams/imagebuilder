@@ -1,13 +1,21 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will install Python dependencies, lint and run tests with a
+# variety of Python versions, and lint the shell scripts
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Python package
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "**" ]
   pull_request:
     branches: [ "master" ]
+
+# Without this, a pull request from a branch in this repository is built twice,
+# once for the push and once for the pull_request. Keying on the source branch
+# puts both in the same group, and a new push supersedes a running build.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -19,19 +27,41 @@ jobs:
         python-version: ["3.9", "3.10", "3.11"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff pytest
+          # ruff is unpinned now that pyproject.toml selects rules explicitly,
+          # so a new release cannot widen the set under us. pytest stays pinned
+          # because 9 requires Python 3.10.
+          pip install ruff 'pytest==8.4.2'
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
       - name: Lint with ruff
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          ruff check --output-format=github --select=E9,F63,F7,F82 --target-version=py39 .
-          # default set of ruff rules with GitHub Annotations
-          ruff check --output-format=github --target-version=py39 .
+          ruff check --output-format=github --select=E9,F63,F7,F82 .
+          # the rule set from pyproject.toml, with GitHub Annotations
+          ruff check --output-format=github .
+      - name: Run tests
+        run: pytest -q
+
+  shellcheck:
+    # Its own job rather than a step in the matrix: the shell scripts have
+    # nothing to do with the Python version, so there is no point linting them
+    # three times
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Lint shell scripts
+        run: |
+          shellcheck --version
+          # Only build-images.sh for now. The provisioning scripts under
+          # scripts/ run on the guest rather than here and currently produce
+          # around a hundred findings, so adding them needs a cleanup first
+          shellcheck build-images.sh

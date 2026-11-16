@@ -2,6 +2,8 @@
 
 This is tested on Alma Linux 8.8. Beware of a duplicate packer executable in `/usr/sbin`, the correct one is in `/usr/bin`. Modify the order of $PATH to ensure the correct one is used.
 
+Requires Packer 1.7 or newer. The OpenStack builder is installed automatically by `packer init`, which imagebuilder runs for you.
+
 ### Install
 
 ``` bash
