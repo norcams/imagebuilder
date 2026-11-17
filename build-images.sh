@@ -137,6 +137,7 @@ LIST=0
 DRYRUN=0
 TIMEOUT=0
 SWEEP=0
+LOG_RESULT_JSON=0
 
 # Every -i given, kept so they can be checked before anything is built
 requested_images=()
@@ -177,7 +178,7 @@ duration() {
 }
 
 usage() {
-    echo "Usage: $0 [-h] [-S] [-B] [-G] [-W] [-t <sec>] [-l] [-i <image>]..."
+    echo "Usage: $0 [-h] [-S] [-B] [-G] [-W] [-j] [-t <sec>] [-l] [-i <image>]..."
     echo
     echo 'Options:'
     echo '  -S  Build all standard images. Negates -i options'
@@ -185,6 +186,7 @@ usage() {
     echo '  -G  Build all vgpu images. Negates -i options'
     echo '  -W  Build all Windows images. Negates -i options'
     echo '  -i  Specify image to build. Can be used multiple times'
+    echo '  -j  Log JSON result. Only use from cron'
     echo '  -s  Sweep: before each build, remove temporary security groups and'
     echo '      keypairs left behind by runs that were killed. Note the lower case:'
     echo '      -S selects the standard images, -s asks for the sweep'
@@ -226,6 +228,10 @@ function build_image() {
 	built_images+=("$image")
     fi
     echo
+}
+
+function to_json_array() {
+    jq -nc '$ARGS.positional' --args "$@"
 }
 
 #---------------------------------------------------------------------
@@ -284,6 +290,9 @@ while getopts "SBGWlnshi:t:" arg; do
 	    ;;
 	s)
 	    SWEEP=1
+	    ;;
+	j)
+	    LOG_RESULT_JSON=1
 	    ;;
 	l)
 	    LIST=1
@@ -411,6 +420,23 @@ printf '%b%s%b %d built, %d failed, %d skipped in %s\n' \
 
 if [ ${#skipped_images[@]} -gt 0 ]; then
     printf '  %bskipped:%b %s\n' "$YLW" "$DEF" "${skipped_images[*]}"
+fi
+
+# Store result in JSON
+if [ $LOG_RESULT_JSON -eq 1 ]; then
+    jq -n \
+       --argjson built "$(to_json_array "$(date +%F)")" \
+       --argjson built "$(to_json_array "${built_images[@]}")" \
+       --argjson failed "$(to_json_array "${failed_images[@]}")" \
+       --argjson skipped "$(to_json_array "${skipped_images[@]}")" \
+       --arg duration "$(duration $((SECONDS - run_start)))" \
+'{
+   date: $date,
+   duration: $duration,
+   "built images": $built,
+   "failed images": $failed,
+   "skipped images": $skipped
+}' > ${LOG_PATH}/result.json
 fi
 
 # Report what failed and exit non-zero, so that cron, a systemd unit or a
