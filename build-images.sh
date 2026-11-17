@@ -270,7 +270,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-while getopts "SBGWlnshi:t:" arg; do
+while getopts "SBGWlnsjhi:t:" arg; do
     case $arg in
 	S|B|G|W)
 	    SELECT_ALL[${OPTION_CATEGORY[$arg]}]=1
