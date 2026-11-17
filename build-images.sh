@@ -425,11 +425,11 @@ fi
 # Store result in JSON
 if [ $LOG_RESULT_JSON -eq 1 ]; then
     jq -n \
-       --argjson built "$(to_json_array "$(date +%F)")" \
+       --arg date "$(date +%F)" \
+       --arg duration "$(duration $((SECONDS - run_start)))" \
        --argjson built "$(to_json_array "${built_images[@]}")" \
        --argjson failed "$(to_json_array "${failed_images[@]}")" \
        --argjson skipped "$(to_json_array "${skipped_images[@]}")" \
-       --arg duration "$(duration $((SECONDS - run_start)))" \
 '{
    date: $date,
    duration: $duration,
