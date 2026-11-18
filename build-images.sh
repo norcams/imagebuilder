@@ -433,9 +433,9 @@ if [ $LOG_RESULT_JSON -eq 1 ]; then
 '{
    date: $date,
    duration: $duration,
-   "built images": $built,
-   "failed images": $failed,
-   "skipped images": $skipped
+   "built_images": $built,
+   "failed_images": $failed,
+   "skipped_images": $skipped
 }' > ${LOG_PATH}/result.json
 fi
 
